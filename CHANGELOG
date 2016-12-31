@@ -1,0 +1,20 @@
+Version 2.1.1
+- Added context menu
+- Corrected some spelling mistakes
+- Fixed crash when searching with special characters like Æ, Ø and Å.
+
+Version 2.1.0
+- Updated all libraries to their latest version (this should fix issues with newer node versions)
+- Updated the design of the app, checked spelling and added responsive so it can be better used on a mobile browser.
+- Fixed small bug with overlapping texts in settings modal
+- Fixed clear button in the downloads section not working
+- Added error logging
+
+Version 2.0.3
+- Removed the updater to stop spamming the domain of the original author
+- Removed character fixing in metadata that would result in AC/DC being turned to AC_DC.
+- Fixed the Artist's album list not being loaded. Now it loads and has the option to download the album.
+- Changed the default country in top charts to UK instead of Germany (not a feature, just a thing I did when I was
+tinkering with the code and forgot to change)
+- Fixed compatibility issues with Node v6 (works on older versions too, but there might be problems with downloading
+the cover art, so please update to v6 if you can)

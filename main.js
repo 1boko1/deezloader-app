@@ -9,6 +9,10 @@ const url = require('url');
 
 var mainWindow;
 
+require('electron-context-menu')({
+  showInspectElement: false
+});
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1400, height: 900, frame: false});

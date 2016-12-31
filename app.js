@@ -397,8 +397,13 @@ io.sockets.on('connection', function (socket) {
     if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) {
       data.type = "track";
     }
+
     Deezer.search(data.text, data.type, function (err, searchObject) {
-      socket.emit("search", {type: data.type, items: searchObject.data});
+      try {
+        socket.emit("search", {type: data.type, items: searchObject.data});
+      } catch (e){
+        socket.emit("search", {type: data.type, items: []});
+      }
     });
   });
 

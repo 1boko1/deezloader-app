@@ -1,6 +1,6 @@
 {
   "name": "deezloader-app",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Download music from Deezer",
   "main": "main.js",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "async": "^2.1.4",
+    "electron-context-menu": "^0.8.0",
     "express": "^4.14.0",
     "mkdirp": "^0.5.1",
     "node-id3": "0.0.7",
