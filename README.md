@@ -14,5 +14,6 @@ Enjoy music without limitations. Download music at high quality (320kbps) using 
 3. Run `./node_modules/.bin/electron ./`
 
 # Disclaimer
+* I am not responsible for the usage of this program by other people.
 * I do not recommend you doing this illegally or against Deezer's terms of service.
 * This project is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
