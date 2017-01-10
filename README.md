@@ -1,8 +1,11 @@
 # Deezloader App
 Enjoy music without limitations. Download music at high quality (320kbps) using this application.
 
+# Download Link
+All versions of this application can be found [here](https://mega.nz/#F!z1tG2Q6I!VOS4wDBvIwt4YcBVs24yFw)
+
 # Usage
-1. Download one of the releases in this repository
+1. Download one of the releases
 2. Extract the contents in a folder
 3. Start the main application (deezloader.exe on windows)
 4. ???
