@@ -1,6 +1,7 @@
 var shell = require('electron').shell;
 var remote = require('electron').remote;
-var packageFile = require('electron').remote.require('./package.json');
+var dialog = remote.dialog;
+var packageFile = remote.require('./package.json');
 
 (function () {
   //open links externally by default
@@ -48,6 +49,12 @@ var packageFile = require('electron').remote.require('./package.json');
   document.onreadystatechange = function () {
     if (document.readyState == "complete") {
       initTitleBar();
+
+      $('#modal_settings_input_downloadTracksLocation').on('click', function () {
+        $(this).val(dialog.showOpenDialog({
+          properties: ['openDirectory']
+        }));
+      });
     }
   };
 })();

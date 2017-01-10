@@ -13,7 +13,7 @@ function Deezer() {
 		input: "3"
 	};
 	this.httpHeaders = {
-		"User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
 		"Content-Language": "en-US",
 		"Cache-Control": "max-age=0",
 		"Accept": "*/*",
@@ -31,7 +31,7 @@ Deezer.prototype.init = function(callback) {
 	var self = this;
 	request.get({url: "http://www.deezer.com/", headers: this.httpHeaders, jar: true}, (function(err, res, body) {
 		if(!err && res.statusCode == 200) {
-			var regex = new RegExp("checkForm = '(.*)'");
+			var regex = new RegExp(/checkForm\s*=\s*[\"|'](.*)[\"|']/g);
 			var _token = regex.exec(body);
 			if(_token instanceof Array && _token[1]) {
 				this.apiQueries.api_token = _token[1];

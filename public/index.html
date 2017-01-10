@@ -67,6 +67,13 @@
         <label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names</label>
       </div>
     </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <i class="material-icons prefix">label</i>
+        <input type="text" id="modal_settings_input_downloadTracksLocation"/>
+        <label for="modal_settings_input_downloadTracksLocation">Download location</label>
+      </div>
+    </div>
     <div class="row center">
       <div class="col s4">
         <input type="checkbox" id="modal_settings_cbox_createM3UFile" class="filled-in"/>
@@ -102,7 +109,7 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
           <div class="collapsible-body">
             <p>
-              <b>Version:</b> 2.1.1<br/>
+              <b>Version:</b> 2.1.2<br/>
               <b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
               <b>Currently Maintained By:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a><br>
               <b>Interface:</b> <a href="http://materializecss.com/">materializecss</a>.<br/>
@@ -141,18 +148,23 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
           <div class="collapsible-body">
             <p>
+              <b>Version 2.1.2</b><br/>
+              - Fixed Deezer API connection<br/>
+              - Fixed tracks metadata naming for diacritics text<br/>
+              - Added custom location for downloads settings<br/>
+              <br/>
               <b>Version 2.1.1</b><br/>
               - Added context menu<br/>
               - Corrected some spelling mistakes<br/>
               - Fixed crash when searching with special characters like Æ, Ø and Å.<br/>
-
+              <br/>
               <b>Version 2.1.0</b><br/>
               - Updated all libraries to their latest version (this should fix issues with newer node versions)<br/>
               - Updated the design of the app, checked spelling and added responsive so it can be better used on a mobile browser.<br/>
               - Fixed small bug with overlapping texts in settings modal<br/>
               - Fixed clear button in the downloads section not working <br/>
               - Added error logging <br>
-              <br><br>
+              <br>
               <b>Version 2.0.3</b><br/>
               - Removed the updater to stop spamming the domain of the original author<br/>
               - Removed character fixing in metadata that would result in AC/DC being turned to AC_DC.<br/>

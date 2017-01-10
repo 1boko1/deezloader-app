@@ -51,13 +51,19 @@ $('.modal-close').click(function (e) {
 //###########################################MODAL_SETTINGS###########################################\\
 $('#nav_btn_openSettingsModal').click(function () {
 
-  var settings = getSettings();
+  socket.emit("loadSettings", {});
 
+  var settings = getSettings();
   fillSettingsModal(settings.trackNameTemplate, settings.playlistTrackNameTemplate, settings.createM3UFile, settings.createArtistFolder, settings.createAlbumFolder);
 
 });
 
 $('#modal_settings_btn_saveSettings').click(function () {
+  var settings = {
+    tracksDownloadLocation: $('#modal_settings_input_downloadTracksLocation').val()
+  };
+
+  socket.emit('saveSettings', {settings: settings});
 
   Cookies.set('settings', {
     trackNameTemplate: $('#modal_settings_input_trackNameTemplate').val(),
@@ -71,11 +77,20 @@ $('#modal_settings_btn_saveSettings').click(function () {
 
 $('#modal_settings_btn_defaultSettings').click(function () {
 
+  socket.emit("loadDefaultSettings", {});
+
   fillSettingsModal('%artist% - %title%', '%number% - %artist% - %title%', false, false, false);
 
 });
 
 function fillSettingsModal(trackNameTemplate, playlistTrackNameTemplate, createM3UFile, createArtistFolder, createAlbumFolder) {
+
+  socket.on('loadSettings', function (data) {
+    if(data.settings){
+      $('#modal_settings_input_downloadTracksLocation').val(data.settings.tracksDownloadLocation);
+      Materialize.updateTextFields();
+    }
+  });
 
   $('#modal_settings_input_trackNameTemplate').val(trackNameTemplate);
   $('#modal_settings_input_playlistTrackNameTemplate').val(playlistTrackNameTemplate);

@@ -1,3 +1,4 @@
 {
-  "serverPort": "1730"
+  "serverPort": "1730",
+  "downloadLocation": null
 }
