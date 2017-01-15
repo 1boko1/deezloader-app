@@ -2,18 +2,28 @@
 //*******************************************INITIALIZATIONS******************************************\\
 //****************************************************************************************************\\
 var socket = io.connect(window.location.href);
-
+var settings = {};
+var defaultSettings = {
+    downloadLocation: "",
+    trackNameTemplate: "%artist% - %title%",
+    playlistTrackNameTemplate: "%number% - %artist% - %title%",
+    createM3UFile: false,
+    createArtistFolder: false,
+    createAlbumFolder: false
+};
+// Ping server to indicate connected
 var initInterval = setInterval(function () {
   socket.emit("checkInit", {});
 }, 1000);
 
-socket.on("checkInit", function (data) {
-  if (data.status) {
-    $('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-      $(this).css('display', 'none');
-    });
-    clearInterval(initInterval);
-  }
+// Connected to server
+socket.on("checkInit", function (config) {
+  $('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+    $(this).css('display', 'none');
+  });
+  clearInterval(initInterval);
+  settings = config;
+  defaultSettings.downloadLocation = config.userDefined.downloadLocation;
 });
 
 $(document).ready(function () {
@@ -39,6 +49,7 @@ var selectedCountry = 'UK';
 socket.emit("getChartsCountryList", {selected: selectedCountry});
 socket.emit("getChartsTrackListByCountry", {country: selectedCountry});
 
+
 //****************************************************************************************************\\
 //***********************************************MODALS***********************************************\\
 //****************************************************************************************************\\
@@ -49,81 +60,45 @@ $('.modal-close').click(function (e) {
 });
 
 //###########################################MODAL_SETTINGS###########################################\\
+
+// Open settings panel
 $('#nav_btn_openSettingsModal').click(function () {
-
-  socket.emit("loadSettings", {});
-
-  var settings = getSettings();
-  fillSettingsModal(settings.trackNameTemplate, settings.playlistTrackNameTemplate, settings.createM3UFile, settings.createArtistFolder, settings.createAlbumFolder);
-
+  fillSettingsModal(settings.userDefined);
 });
 
+// Save settings button
 $('#modal_settings_btn_saveSettings').click(function () {
-  var settings = {
-    tracksDownloadLocation: $('#modal_settings_input_downloadTracksLocation').val()
-  };
 
-  socket.emit('saveSettings', {settings: settings});
-
-  Cookies.set('settings', {
+  // Save
+  settings.userDefined = {
     trackNameTemplate: $('#modal_settings_input_trackNameTemplate').val(),
     playlistTrackNameTemplate: $('#modal_settings_input_playlistTrackNameTemplate').val(),
     createM3UFile: $('#modal_settings_cbox_createM3UFile').is(':checked'),
     createArtistFolder: $('#modal_settings_cbox_createArtistFolder').is(':checked'),
-    createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked')
-  }, {expires: 9999})
+    createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked'),
+    downloadLocation: $('#modal_settings_input_downloadTracksLocation').val()
+  };
 
+  // Send updated settings to be saved into config file
+  socket.emit('saveSettings', settings);
 });
 
+// Reset defaults button
 $('#modal_settings_btn_defaultSettings').click(function () {
-
-  socket.emit("loadDefaultSettings", {});
-
-  fillSettingsModal('%artist% - %title%', '%number% - %artist% - %title%', false, false, false);
-
+  fillSettingsModal(defaultSettings);
 });
 
-function fillSettingsModal(trackNameTemplate, playlistTrackNameTemplate, createM3UFile, createArtistFolder, createAlbumFolder) {
+// Populate settings fields
+function fillSettingsModal(settings) {
 
-  socket.on('loadSettings', function (data) {
-    if(data.settings){
-      $('#modal_settings_input_downloadTracksLocation').val(data.settings.tracksDownloadLocation);
-      Materialize.updateTextFields();
-    }
-  });
+  $('#modal_settings_input_trackNameTemplate').val(settings.trackNameTemplate);
+  $('#modal_settings_input_playlistTrackNameTemplate').val(settings.playlistTrackNameTemplate);
+  $('#modal_settings_cbox_createM3UFile').prop('checked', settings.createM3UFile);
+  $('#modal_settings_cbox_createArtistFolder').prop('checked', settings.createArtistFolder);
+  $('#modal_settings_cbox_createAlbumFolder').prop('checked', settings.createAlbumFolder);
+  $('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation);
 
-  $('#modal_settings_input_trackNameTemplate').val(trackNameTemplate);
-  $('#modal_settings_input_playlistTrackNameTemplate').val(playlistTrackNameTemplate);
-  $('#modal_settings_cbox_createM3UFile').prop('checked', createM3UFile);
-  $('#modal_settings_cbox_createArtistFolder').prop('checked', createArtistFolder);
-  $('#modal_settings_cbox_createAlbumFolder').prop('checked', createAlbumFolder);
-
-  Materialize.updateTextFields();
-
-}
-
-function setDefaultSettings() {
-
-  Cookies.set('settings', {
-    trackNameTemplate: '%artist% - %title%',
-    playlistTrackNameTemplate: '%number% - %artist% - %title%',
-    createM3UFile: false,
-    createArtistFolder: false,
-    createAlbumFolder: false
-  }, {expires: 9999});
-
-}
-
-function getSettings() {
-
-  var settings_JSON;
-
-  if ((settings_JSON = Cookies.get('settings')) == undefined) {
-    setDefaultSettings();
-    settings_JSON = Cookies.get('settings');
-  }
-
-  return jQuery.parseJSON(settings_JSON);
+  Materialize.updateTextFields()
 
 }
 
@@ -485,16 +460,16 @@ socket.on("getChartsTrackListByCountry", function (data) {
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
 
-  var type = getTypeFromLink(url), id = getIDFromLink(url), settings = getSettings();
+  var type = getTypeFromLink(url), id = getIDFromLink(url);
 
   if (type == 'track') {
-    settings.filename = settings.trackNameTemplate;
+    settings.filename = settings.userDefined.trackNameTemplate;
   } else if (type == 'playlist') {
-    settings.filename = settings.playlistTrackNameTemplate;
+    settings.filename = settings.userDefined.playlistTrackNameTemplate;
   } else if (type == 'album') {
-    settings.filename = settings.playlistTrackNameTemplate;
+    settings.filename = settings.userDefined.playlistTrackNameTemplate;
   } else if (type == 'artist') {
-    settings.filename = settings.playlistTrackNameTemplate;
+    settings.filename = settings.userDefined.playlistTrackNameTemplate;
   } else {
     $('#modal_wrongURL').modal('open');
     return false;

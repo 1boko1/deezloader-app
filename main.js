@@ -21,7 +21,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
-
+  mainWindow.openDevTools();
 
   mainWindow.on('closed', function () {
     mainWindow = null;
