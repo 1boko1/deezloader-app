@@ -36,11 +36,8 @@ var mkdirp = require('mkdirp');
 var configFile = require('./config.json');
 
 // Setup the folders
-var mainFolder = electronApp.getPath('music') + '\\Deezloader';
-
-if (configFile.downloadLocation != null){
-  mainFolder = configFile.downloadLocation;
-}
+configFile.userDefined.downloadLocation = configFile.userDefined.downloadLocation || electronApp.getPath('music') + '\\Deezloader';
+var mainFolder = configFile.userDefined.downloadLocation;
 
 initFolders();
 module.exports.mainFolder = mainFolder;
@@ -72,8 +69,8 @@ io.sockets.on('connection', function (socket) {
   socket.downloadWorker = null;
   socket.lastQueueId = null;
 
-  socket.on("checkInit", function (data) {
-    socket.emit("checkInit", {status: initialized});
+  socket.on("checkInit", function () {
+    socket.emit("checkInit", configFile);
   });
 
   Deezer.onDownloadProgress = function (track, progress) {
@@ -498,43 +495,14 @@ io.sockets.on('connection', function (socket) {
     }
   });
 
-  socket.on("loadSettings", function (data) {
-    var settings = {
-      tracksDownloadLocation: mainFolder
-    };
-    socket.emit("loadSettings", {settings: settings});
-  });
-
-  socket.on("saveSettings", function (data) {
-    if (data.settings){
-      configFile.downloadLocation = data.settings.tracksDownloadLocation;
-
-      fs.writeFile('./config.json', JSON.stringify(configFile, null, 2), function (err) {
-        if (err) return console.log(err);
-
-        mainFolder = configFile.downloadLocation;
-        initFolders();
-        console.log('Settings Updated');
-      });
-    }
-  });
-
-  socket.on("loadDefaultSettings", function (data) {
-    configFile.downloadLocation = null;
-
+  socket.on("saveSettings", function (settings) {
+    configFile = settings;
     fs.writeFile('./config.json', JSON.stringify(configFile, null, 2), function (err) {
       if (err) return console.log(err);
-
-      mainFolder = electronApp.getPath('music') + '\\Deezloader';
-      initFolders();
-
-      var settings = {
-        tracksDownloadLocation: mainFolder
-      };
-
-      socket.emit("loadSettings", {settings: settings});
       console.log('Settings Updated');
     });
+
+    mainFolder = configFile.userDefined.downloadLocation;
   });
 
   function downloadTrack(id, settings, callback) {
@@ -593,14 +561,14 @@ io.sockets.on('connection', function (socket) {
       if (settings.addToPath) {
         filepath += fixName(settings.addToPath, true) + '/';
       } else {
-        if (settings.createArtistFolder) {
+        if (settings.userDefined.createArtistFolder) {
           filepath += fixName(metadata.artist, true) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
           }
         }
 
-        if (settings.createAlbumFolder) {
+        if (settings.userDefined.createAlbumFolder) {
           filepath += fixName(metadata.album, true) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
@@ -657,7 +625,7 @@ io.sockets.on('connection', function (socket) {
             return;
           }
 
-          if (settings.createM3UFile && settings.playlist) {
+          if (settings.userDefined.createM3UFile && settings.playlist) {
             fs.appendFileSync(filepath + "playlist.m3u", filename + ".mp3\r\n");
           }
 
