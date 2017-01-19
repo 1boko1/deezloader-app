@@ -6,7 +6,7 @@
     "createM3UFile": false,
     "createArtistFolder": true,
     "createAlbumFolder": true,
-    "downloadLocation": "/Users/chhiggin/Downloads"
+    "downloadLocation": ""
   },
   "filename": "%number% - %artist% - %title%"
 }
