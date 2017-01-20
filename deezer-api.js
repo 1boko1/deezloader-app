@@ -93,7 +93,6 @@ Deezer.prototype.getPlaylistSize = function(id, callback) {
 Deezer.prototype.getPlaylistTracks = function(id, callback) {
     getJSON("http://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res){
         if (!(res instanceof Error)){
-            callback(res);
         } else {
             callback(null, res)
         }
@@ -273,7 +272,7 @@ Deezer.prototype.onDownloadProgress = function(track, progress) {
 
 function getJSON(url, callback){
     request.get({url: url, headers: this.httpHeaders, jar: true}, function(err, res, body) {
-        if(err || res.statusCode != 200) {
+        if(err || res.statusCode != 200 || !body) {
             console.log("Unable to initialize Deezer API");
             callback(new Error());
         } else {
