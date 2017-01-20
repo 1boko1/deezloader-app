@@ -546,14 +546,14 @@ io.sockets.on('connection', function (socket) {
       let filepath = mp3FilesDir;
       if (settings.userDefined.createAlbumFolder || settings.userDefined.createAlbumFolder) {
         if (settings.userDefined.createArtistFolder) {
-          filepath += fixName(metadata.artist, true) + '/';
+          filepath += fixName(metadata.artist, false) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
           }
         }
 
         if (settings.userDefined.createAlbumFolder) {
-          filepath += fixName(settings.userDefined.createArtistFolder ? metadata.album : `${metadata.artist} - ${metadata.album}`, true) + '/';
+          filepath += fixName(settings.userDefined.createArtistFolder ? metadata.album : `${metadata.artist} - ${metadata.album}`, false) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
           }
@@ -577,14 +577,15 @@ io.sockets.on('connection', function (socket) {
 
       //Get image
       if (metadata.image) {
-        let imagefile = fs.createWriteStream(coverArtDir + fixName(metadata.title, true) + ".jpg");
+        let imgPath = coverArtDir + fixName(metadata.title, true) + ".jpg";
+        let imagefile = fs.createWriteStream(imgPath);
         http.get(metadata.image, function (response) {
           if (!response) {
             metadata.image = undefined;
             return;
           }
           response.pipe(imagefile);
-          metadata.image = (coverArtDir + fixName(metadata.title, true) + ".jpg").replace(/\\/g, "/");
+          metadata.image = (imgPath).replace(/\\/g, "/");
         });
       }
 
@@ -643,20 +644,14 @@ io.sockets.on('connection', function (socket) {
   }
 });
 
-let fixName = function (input, file) {
-  let regEx = new RegExp('[,/\\\\:*?""<>|]', 'g');
-  if (!file) {
-    regEx = new RegExp('[/\\\\""<>|]', 'g');
-  }
-  let fixedName = input.replace(regEx, '_');
-  fixedName = removeDiacritics(fixedName);
-
-  return fixedName;
+function fixName (input, file) {
+  const regEx = file ? /[,./\\:*?"<>|]/g : /[/\\"<>|]|\.$/g;
+  return removeDiacritics(input.replace(regEx, '_'));
 };
 
 function removeDiacritics(str) {
 
-  let defaultDiacriticsRemovalMap = [
+  const defaultDiacriticsRemovalMap = [
     {
       'base': 'A',
       'letters': /[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g

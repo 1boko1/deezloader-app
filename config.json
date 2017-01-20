@@ -1,12 +1,12 @@
 {
   "serverPort": "1730",
   "userDefined": {
-    "trackNameTemplate": "%artist% - %title%",
-    "playlistTrackNameTemplate": "%number% - %artist% - %title%",
+    "trackNameTemplate": "%title%",
+    "playlistTrackNameTemplate": "%title%",
     "createM3UFile": false,
     "createArtistFolder": true,
     "createAlbumFolder": true,
-    "downloadLocation": ""
+    "downloadLocation": "C:\\Users\\Chris\\Desktop"
   },
-  "filename": "%number% - %artist% - %title%"
+  "filename": "%artist% - %title%"
 }
