@@ -1,0 +1,10 @@
+/*Overwrite material styles here*/
+
+table.responsive-table td:empty:before {
+    display: block;
+    min-height: 56px;
+}
+
+td > img {
+    display: flex;
+}

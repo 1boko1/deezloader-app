@@ -209,8 +209,8 @@ function showResults_table_track(tracks) {
 
         $(tableBody).append(
             '<tr class="animated fadeInUp">' +
-            '<td><img src="' + currentResultTrack['album']['cover_small'] + '" class="circle" /></td>' +
-            '<td>' + currentResultTrack['title'] + '</td>' +
+            '<td><img src="' + currentResultTrack['album']['cover_small'] + '"/></td>' +
+            '<td>' + currentResultTrack['title'] + (currentResultTrack.explicit_lyrics ? '     <i class="material-icons tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '</td>') +
             '<td>' + currentResultTrack['artist']['name'] + '</td>' +
             '<td>' + currentResultTrack['album']['title'] + '</td>' +
             '<td>' + convertDuration(currentResultTrack['duration']) + '</td>' +
@@ -219,7 +219,7 @@ function showResults_table_track(tracks) {
         generateDownloadLink(currentResultTrack['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 
     }
-
+    $('.tooltipped').tooltip({delay: 100});
 }
 
 function showResults_table_album(albums) {
