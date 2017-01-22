@@ -6,7 +6,7 @@
     "createM3UFile": false,
     "createArtistFolder": true,
     "createAlbumFolder": true,
-    "downloadLocation": "C:\\Users\\Chris\\Desktop"
+    "downloadLocation": "C:\\Users\\Chris\\Downloads"
   },
   "filename": "%artist% - %title%"
 }
