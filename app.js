@@ -464,6 +464,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     let cancel = false;
+    let cancelSuccess;
 
     for (let i = 0; i < socket.downloadQueue.length; i++) {
       if (data.queueId == socket.downloadQueue[i].queueId) {
@@ -474,7 +475,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     if (socket.currentItem && socket.currentItem.queueId == data.queueId) {
-      let cancelSuccess = Deezer.cancelDecryptTrack();
+      cancelSuccess = Deezer.cancelDecryptTrack();
       cancel = cancel || cancelSuccess;
     }
 
