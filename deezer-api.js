@@ -93,6 +93,7 @@ Deezer.prototype.getPlaylistSize = function(id, callback) {
 Deezer.prototype.getPlaylistTracks = function(id, callback) {
     getJSON("http://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res){
         if (!(res instanceof Error)){
+        	callback(res)
         } else {
             callback(null, res)
         }
