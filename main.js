@@ -21,7 +21,6 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
-  mainWindow.openDevTools();
 
   mainWindow.on('closed', function () {
     mainWindow = null;
@@ -33,9 +32,7 @@ app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('activate', function () {

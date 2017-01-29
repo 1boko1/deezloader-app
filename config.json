@@ -1,12 +1,12 @@
 {
   "serverPort": "1730",
   "userDefined": {
-    "trackNameTemplate": "%title%",
-    "playlistTrackNameTemplate": "%title%",
+    "trackNameTemplate": "%artist% - %title%",
+    "playlistTrackNameTemplate": "%number% - %artist% - %title%",
     "createM3UFile": false,
-    "createArtistFolder": true,
-    "createAlbumFolder": true,
-    "downloadLocation": "C:\\Users\\Chris\\Downloads"
+    "createArtistFolder": false,
+    "createAlbumFolder": false,
+    "downloadLocation": "C:\\Users\\Jack Dox\\Music\\Deezloader"
   },
-  "filename": "%artist% - %title%"
+  "filename": "%number% - %artist% - %title%"
 }
