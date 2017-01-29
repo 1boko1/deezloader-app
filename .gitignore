@@ -1,7 +1,9 @@
 node_modules
 *.bat
 .idea
+.*
 *.log
+config.json
 /BUILD
 
 
