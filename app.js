@@ -527,6 +527,9 @@ io.sockets.on('connection', function (socket) {
   socket.on("saveSettings", function (settings) {
     if (settings.userDefined.downloadLocation == mainFolder){
       settings.userDefined.downloadLocation = null;
+    }else{
+      settings.userDefined.downloadLocation = path.resolve(settings.userDefined.downloadLocation + path.sep);
+      mainFolder = settings.userDefined.downloadLocation;
     }
 
     configFile.userDefined = settings.userDefined;
@@ -596,7 +599,9 @@ io.sockets.on('connection', function (socket) {
         fs.mkdirSync(filepath);
       }
 
-      writePath = filepath + fixName(filename, true) + '.mp3';
+      let writePath = filepath + fixName(filename, true) + '.mp3';
+
+      console.log(writePath);
 
       if (fs.existsSync(writePath)) {
         console.log("Already downloaded: " + metadata.artist + ' - ' + metadata.title);

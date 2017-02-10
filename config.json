@@ -6,6 +6,6 @@
     "createM3UFile": false,
     "createArtistFolder": false,
     "createAlbumFolder": false,
-    "downloadLocation": "C:\\Users\\Jack Dox\\Downloads"
+    "downloadLocation": null
   }
 }

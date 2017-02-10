@@ -6,6 +6,8 @@ const startingChartCountry = 'UK';
 const defaultUserSettings = mainApp.defaultSettings;
 let userSettings = [];
 
+console.log(defaultUserSettings);
+
 // Ping the server to check on the API
 let initInterval = setInterval(function () {
   socket.emit("checkInit");
@@ -66,6 +68,7 @@ socket.emit("getChartsTrackListByCountry", {country: startingChartCountry});
 socket.emit("getUserSettings");
 socket.on('getUserSettings', function (data) {
   userSettings = data.settings;
+  console.log('Settings refreshed');
 });
 
 /**
