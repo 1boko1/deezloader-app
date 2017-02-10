@@ -3,11 +3,18 @@ const theApp = require('./app');
 const appConfig = require('./config.json');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const WindowStateManager = require('electron-window-state-manager');
 
 const path = require('path');
 const url = require('url');
 
-var mainWindow;
+let mainWindow;
+
+// Create a new instance of the WindowStateManager
+const mainWindowState = new WindowStateManager('mainWindow', {
+  defaultWidth: 1400,
+  defaultHeight: 900
+});
 
 require('electron-context-menu')({
   showInspectElement: false
@@ -15,7 +22,14 @@ require('electron-context-menu')({
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1400, height: 900, frame: false});
+  mainWindow = new BrowserWindow({
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    frame: false,
+    icon: __dirname + "/icon.png"
+  });
 
   mainWindow.setMenu(null);
 
@@ -24,8 +38,17 @@ function createWindow () {
 
   mainWindow.on('closed', function () {
     mainWindow = null;
-  })
+  });
 
+  // Check if window was closed maximized and restore it
+  if (mainWindowState.maximized) {
+    mainWindow.maximize();
+  }
+
+  // Save current window state
+  mainWindow.on('close', () => {
+    mainWindowState.saveState(mainWindow);
+  });
 }
 
 app.on('ready', createWindow);

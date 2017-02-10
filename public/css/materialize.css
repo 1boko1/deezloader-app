@@ -6964,7 +6964,6 @@ body {
           flex-direction: column; }
 
 #application-container {
-  overflow-y: scroll;
   -webkit-box-flex: 1;
   -webkit-flex: 1 0 auto;
           flex: 1 0 auto;

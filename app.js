@@ -1,7 +1,7 @@
 /*
- *  _____          _          _
- * |  __ \          | |          | |
- * | |  | |  ___   ___  ____| |  ___  __ _   __| |  ___  _ __
+ *  _____                    _                    _
+ * |  __ \                  | |                  | |
+ * | |  | |  ___   ___  ____| |  ___    __ _   __| |  ___  _ __
  * | |  | | / _ \ / _ \|_  /| | / _ \  / _` | / _` | / _ \| '__|
  * | |__| ||  __/|  __/ / / | || (_) || (_| || (_| ||  __/| |
  * |_____/  \___| \___|/___||_| \___/  \__,_| \__,_| \___||_|
@@ -12,37 +12,52 @@
  *  Original work by ZzMTV <https://boerse.to/members/zzmtv.3378614/>
  * */
 
+const winston = require('winston');
+const electron = require('electron');
+const electronApp = electron.app;
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const http = require('http');
+const io = require('socket.io').listen(server, {log: false});
+const fs = require('fs');
+const async = require('async');
+const request = require('request');
+const nodeID3 = require('node-id3');
+const Deezer = require('./deezer-api');
+const mkdirp = require('mkdirp');
+const path = require('path');
+let configFile = require('./config.json');
+
+// Main Constants
+const configFileLocation = __dirname + '/config.json';
+const coverArtFolder = electronApp.getPath('temp') + path.sep + 'deezloader-imgs' + path.sep;
+const defaultDownloadDir = electronApp.getPath('music') + path.sep + 'Deezloader' + path.sep;
+const defaultSettings = {
+  "trackNameTemplate": "%artist% - %title%",
+  "playlistTrackNameTemplate": "%number% - %artist% - %title%",
+  "createM3UFile": false,
+  "createArtistFolder": false,
+  "createAlbumFolder": false,
+  "downloadLocation": null
+};
+
 // Setup error logging
-let winston = require('winston');
 winston.add(winston.transports.File, {
   filename: __dirname + '/deezloader.log',
   handleExceptions: true,
   humanReadableUnhandledException: true
 });
 
-let electron = require('electron');
-let electronApp = electron.app;
-let express = require('express');
-let app = express();
-let server = require('http').createServer(app);
-let http = require('http');
-let io = require('socket.io').listen(server, {log: false});
-let fs = require('fs');
-let async = require('async');
-let request = require('request');
-let nodeID3 = require('node-id3');
-let Deezer = require('./deezer-api');
-let mkdirp = require('mkdirp');
-let configFile = require('./config.json');
+// Setup the folders START
+let mainFolder = defaultDownloadDir;
 
-// Setup the folders
-configFile.userDefined.downloadLocation = configFile.userDefined.downloadLocation || electronApp.getPath('music') + '\\Deezloader';
-let mainFolder = configFile.userDefined.downloadLocation;
-let coverArtDir = mainFolder + "/img";
-let mp3FilesDir = mainFolder + "/mp3";
+if (configFile.userDefined.downloadLocation != null){
+  mainFolder = configFile.userDefined.downloadLocation;
+}
 
 initFolders();
-module.exports.mainFolder = mainFolder;
+// END
 
 // Route and Create server
 app.use('/', express.static(__dirname + '/public/'));
@@ -50,19 +65,19 @@ server.listen(configFile.serverPort);
 console.log('Server is running @ localhost:' + configFile.serverPort);
 
 // Deezer API init START
-// Initiate the Deezer API, or try to until the fucking server dies
-let initialized = false; // The magic let
+let DeezerAPIconnected = false; // The magic let
 
-let tryInit = setInterval(function () {
+magicInterval(function (interval) {
+  console.log('Checking init attempt');
   Deezer.init(function (err) {
-    if (err) {
+    if (!err) {
+      DeezerAPIconnected = true;
+      clearInterval(interval);
+    }else{
       console.log(err);
-      return;
     }
-    clearInterval(tryInit);
-    initialized = true;
   });
-}, 1000);
+}, 1000, 3);
 // END
 
 // START sockets clusterfuck
@@ -72,7 +87,7 @@ io.sockets.on('connection', function (socket) {
   socket.lastQueueId = null;
 
   socket.on("checkInit", function () {
-    socket.emit("checkInit", configFile);
+    socket.emit("checkInit", {status: DeezerAPIconnected});
   });
 
   Deezer.onDownloadProgress = function (track, progress) {
@@ -404,7 +419,7 @@ io.sockets.on('connection', function (socket) {
       data.type = "track";
     }
 
-    Deezer.search(data.text, data.type, function (searchObject, err) {
+    Deezer.search(encodeURIComponent(data.text), data.type, function (searchObject, err) {
       try {
         socket.emit("search", {type: data.type, items: searchObject.data});
       } catch (e) {
@@ -500,9 +515,22 @@ io.sockets.on('connection', function (socket) {
     }
   });
 
+  socket.on("getUserSettings", function () {
+    let settings = configFile.userDefined;
+    if (!settings.downloadLocation){
+      settings.downloadLocation = mainFolder;
+    }
+
+    socket.emit('getUserSettings', {settings: settings});
+  });
+
   socket.on("saveSettings", function (settings) {
-    configFile = settings;
-    fs.writeFile('./config.json', JSON.stringify(configFile, null, 2), function (err) {
+    if (settings.userDefined.downloadLocation == mainFolder){
+      settings.userDefined.downloadLocation = null;
+    }
+
+    configFile.userDefined = settings.userDefined;
+    fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
       if (err) return console.log(err);
       console.log('Settings Updated');
       initFolders();
@@ -544,17 +572,17 @@ io.sockets.on('connection', function (socket) {
         filename = settingsRegex(metadata, settings.filename, settings.playlist);
       }
 
-      let filepath = mp3FilesDir;
-      if (settings.userDefined.createAlbumFolder || settings.userDefined.createAlbumFolder) {
-        if (settings.userDefined.createArtistFolder) {
+      let filepath = mainFolder;
+      if (settings.createAlbumFolder || settings.createAlbumFolder) {
+        if (settings.createArtistFolder) {
           filepath += fixName(metadata.artist, false) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
           }
         }
 
-        if (settings.userDefined.createAlbumFolder) {
-          filepath += fixName(settings.userDefined.createArtistFolder ? metadata.album : `${metadata.artist} - ${metadata.album}`, false) + '/';
+        if (settings.createAlbumFolder) {
+          filepath += fixName(settings.createArtistFolder ? metadata.album : `${metadata.artist} - ${metadata.album}`, false) + '/';
           if (!fs.existsSync(filepath)) {
             fs.mkdirSync(filepath);
           }
@@ -578,7 +606,7 @@ io.sockets.on('connection', function (socket) {
 
       //Get image
       if (metadata.image) {
-        let imgPath = coverArtDir + fixName(metadata.title, true) + ".jpg";
+        let imgPath = coverArtFolder + fixName(metadata.title, true) + ".jpg";
         let imagefile = fs.createWriteStream(imgPath);
         http.get(metadata.image, function (response) {
           if (!response) {
@@ -613,7 +641,7 @@ io.sockets.on('connection', function (socket) {
             return;
           }
 
-          if (settings.userDefined.createM3UFile && settings.playlist) {
+          if (settings.createM3UFile && settings.playlist) {
             fs.appendFileSync(filepath + "playlist.m3u", filename + ".mp3\r\n");
           }
 
@@ -645,11 +673,39 @@ io.sockets.on('connection', function (socket) {
   }
 });
 
+// Helper functions
+
+/**
+ * Updates individual parameters in the settings file
+ * @param config
+ * @param value
+ */
+function updateSettingsFile(config, value) {
+  configFile.userDefined[config] = value;
+
+  fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
+    if (err) return console.log(err);
+    console.log('Settings Updated');
+    initFolders();
+  });
+}
+
+/**
+ * Replaces bad characters in metadata and files
+ * @param input
+ * @param file boolean
+ * @returns {*}
+ */
 function fixName (input, file) {
   const regEx = file ? /[,./\\:*?"<>|]/g : /[/\\"<>|]|\.$/g;
   return removeDiacritics(input.replace(regEx, '_'));
-};
+}
 
+/**
+ * Removes diacritics, obviously
+ * @param str
+ * @returns {*}
+ */
 function removeDiacritics(str) {
 
   const defaultDiacriticsRemovalMap = [
@@ -843,38 +899,46 @@ function removeDiacritics(str) {
 
 }
 
+/**
+ * Initialize the temp folder for covers and main folder for downloads
+ */
 function initFolders() {
-  mainFolder = configFile.userDefined.downloadLocation;
-  coverArtDir = mainFolder + "/img/";
-  mp3FilesDir = mainFolder + "/mp3/";
-  // Create main folder
+  // Check if main folder exists
   if (!fs.existsSync(mainFolder)) {
-    fs.mkdirSync(mainFolder)
+    mainFolder = defaultDownloadDir;
+    updateSettingsFile('downloadLocation', defaultDownloadDir);
   }
 
   // Check if folder for covers exists. Create if not
-  if (fs.existsSync(coverArtDir)) {
+  if (fs.existsSync(coverArtFolder)) {
 
     // Delete each file inside the folder
-    fs.readdirSync(coverArtDir).forEach(function (file, index) {
-      let curPath = coverArtDir + "/" + file;
+    fs.readdirSync(coverArtFolder).forEach(function (file, index) {
+      let curPath = coverArtFolder + "/" + file;
       fs.unlinkSync(curPath);
     });
 
     // Delete the folder and make a new one
-    fs.rmdir(coverArtDir, function (err) {
-      fs.mkdirSync(coverArtDir);
+    fs.rmdir(coverArtFolder, function (err) {
+      fs.mkdirSync(coverArtFolder);
     });
   } else {
-    fs.mkdirSync(coverArtDir);
+    fs.mkdirSync(coverArtFolder);
   }
 
   // Create if folder for audio files does not exist
-  if (!fs.existsSync(mp3FilesDir)) {
-    fs.mkdirSync(mp3FilesDir)
+  if (!fs.existsSync(mainFolder)) {
+    fs.mkdirSync(mainFolder)
   }
 }
 
+/**
+ * Creates the name of the tracks replacing wildcards to correct metadata
+ * @param metadata
+ * @param filename
+ * @param playlist
+ * @returns {XML|string|*}
+ */
 function settingsRegex(metadata, filename, playlist) {
   filename = filename.replace(/%title%/g, metadata.title);
   filename = filename.replace(/%album%/g, metadata.album);
@@ -885,11 +949,42 @@ function settingsRegex(metadata, filename, playlist) {
   return filename;
 }
 
+/**
+ * I really don't understand what this does ... but it does something
+ * @param str
+ * @param max
+ * @returns {String|string|*}
+ */
 function pad(str, max) {
   str = str.toString();
   return str.length < max ? pad("0" + str, max) : str;
 }
 
+/**
+ * An interval that stops after a number of repetitions
+ * @param success
+ * @param delay
+ * @param repetitions
+ */
+function magicInterval(success, delay, repetitions) {
+  let x = 0;
+  let intervalID = setInterval(function () {
+
+    success(intervalID);
+
+    if (++x === repetitions) {
+      clearInterval(intervalID);
+    }
+  }, delay);
+}
+
+// Show crash error in console for debugging
 process.on('uncaughtException', function (err) {
   console.trace(err);
 });
+
+// Exporting vars
+defaultSettings.downloadLocation = mainFolder;
+
+module.exports.mainFolder = mainFolder;
+module.exports.defaultSettings = defaultSettings;

@@ -1,3 +1,16 @@
+Version 2.2.0
+- Fixed settings panel, all settings should work as expected now
+- Fixed writing location of config.json
+- Fixed crashing when searching for cyrillic characters, it should work fine now
+- Moved the folder for cover arts to the temp folder of the system
+- Added icon for explicit songs
+- The window size and position are now remembered
+- The "Scroll to top" button works again
+- Fixed problem with folders that contain dots and other symbols
+- A bunch of refactoring thanks to Blind-Mute
+- Fixed cover art not embedding on OSX
+- Minor performance improvements
+
 Version 2.1.2
 - Fixed Deezer API connection
 - Fixed tracks metadata naming for diacritics text

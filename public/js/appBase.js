@@ -1,7 +1,9 @@
-var shell = require('electron').shell;
-var remote = require('electron').remote;
-var dialog = remote.dialog;
-var packageFile = remote.require('./package.json');
+const shell = require('electron').shell;
+const remote = require('electron').remote;
+const dialog = remote.dialog;
+const packageFile = remote.require('./package.json');
+const mainApp = remote.require('./app');
+const path = remote.require('path');
 
 (function () {
   //open links externally by default
@@ -17,13 +19,11 @@ var packageFile = remote.require('./package.json');
     }
   });
 
-  $('#openDownloadsFolder').on('click', function () {
-    shell.showItemInFolder(remote.require('./app').mainFolder + '/.');
-  });
+
 
   // Function to make title-bar work
   function initTitleBar() {
-    var $mainEl = $('#title-bar');
+    let $mainEl = $('#title-bar');
     const window = remote.getCurrentWindow();
 
     $mainEl.find('#application_version').text(packageFile.version);
@@ -45,6 +45,12 @@ var packageFile = remote.require('./package.json');
     });
   }
 
+  // Setup quit button on init loader in case of fail
+  $('#init-quit-btn').on('click', function (e) {
+    e.preventDefault();
+    remote.getCurrentWindow().close();
+  });
+
   // Ready state of the page
   document.onreadystatechange = function () {
     if (document.readyState == "complete") {
@@ -57,4 +63,4 @@ var packageFile = remote.require('./package.json');
       });
     }
   };
-})();
+})(jQuery);

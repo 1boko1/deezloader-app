@@ -27,8 +27,12 @@
 <!--****************************************************************************************************-->
 <div id="initializing" class="center indigo valign-wrapper">
   <div class="center-align">
-    <h1 class="white-text">Initializing...</h1>
-    <div class="preloader-wrapper big active">
+    <h1 class="white-text" id="init-text">Initializing...</h1>
+    <div class="buttons" style="display: none">
+      <button class="btn btn-large btn-flat red white-text" id="init-quit-btn">Close</button>
+    </div>
+
+    <div class="preloader-wrapper big active" id="init-preloader">
       <div class="spinner-layer">
         <div class="circle-clipper left">
           <div class="circle"></div>
@@ -110,7 +114,7 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
           <div class="collapsible-body">
             <p>
-              <b>Version:</b> 2.1.2<br/>
+              <b>Version:</b> 2.2.0<br/>
               <b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
               <b>Currently Maintained By:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a><br>
               <b>Interface:</b> <a href="http://materializecss.com/">materializecss</a>.<br/>
@@ -149,6 +153,19 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
           <div class="collapsible-body">
             <p>
+              <b>Version 2.2.0</b><br/>
+              - Fixed settings panel, all settings should work as expected now<br/>
+              - Fixed writing location of config.json<br/>
+              - Fixed crashing when searching for cyrillic characters, it should work fine now<br/>
+              - Moved the folder for cover arts to the temp folder of the system<br/>
+              - Added icon for explicit songs<br/>
+              - The window size and position are now remembered<br/>
+              - The "Scroll to top" button works again<br/>
+              - Fixed problem with folders that contain dots and other symbols<br/>
+              - A bunch of refactoring thanks to Blind-Mute<br/>
+              - Fixed cover art not embedding on OSX<br/>
+              - Minor performance improvements<br/>
+              <br/>
               <b>Version 2.1.2</b><br/>
               - Fixed Deezer API connection<br/>
               - Fixed tracks metadata naming for diacritics text<br/>
@@ -178,6 +195,15 @@
           </div>
         </li>
         <li>
+          <div class="collapsible-header waves-effect"><i class="material-icons">build</i>Contributors</div>
+          <div class="collapsible-body">
+            <p>Thanks to the following contributors for fixing bugs and improving this application. <br> <br>
+              <a href="https://www.reddit.com/user/Blind-Mute">Blind-Mute</a> <br>
+              <a href="https://gitlab.com/Persei08">Persei08</a> <br>
+            </p>
+          </div>
+        </li>
+        <li>
           <div class="collapsible-header waves-effect"><i class="material-icons">copyright</i>License</div>
           <div class="collapsible-body">
             <p>
@@ -188,6 +214,36 @@
               This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative
               Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
             </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header waves-effect"><i class="material-icons">credit_card</i>Donations</div>
+          <div class="collapsible-body">
+            <p>All of the donations will go towards further improving Deezloader such as a private server for downloads, updates
+              and code hosting, a domain and coding an automatic update system.
+              <br><br>
+              Donating is completely optional, Deezloader is and will be forever free to use.
+            </p>
+            <div style="font-size:16px;margin:0 auto" class="blockchain-btn"
+                 data-address="3FQPfUfpJxq6bokfdg5tmziE1pQGjHyAHE"
+                 data-shared="false">
+              <div class="blockchain stage-begin" style="cursor: pointer;text-align: center">
+                <img src="https://blockchain.info/Resources/buttons/donate_64.png"/>
+              </div>
+              <div class="blockchain stage-loading" style="text-align:center">
+                <img src="https://blockchain.info/Resources/loading-large.gif"/>
+              </div>
+              <div class="blockchain stage-ready">
+                <p align="center">Donate To Bitcoin Address: <b>[[address]]</b></p>
+                <p align="center" class="qr-code"></p>
+              </div>
+              <div class="blockchain stage-paid">
+                Donation of <b>[[value]] BTC</b> Received. Thank You.
+              </div>
+              <div class="blockchain stage-error">
+                <font color="red">[[error]]</font>
+              </div>
+            </div>
           </div>
         </li>
       </ul>
@@ -263,7 +319,7 @@
     <div class="jumbotron">
       <div class="container">
         <div class="clear-nav">
-          <div class="logo"><a href="#">Deezloader <sup>2.1</sup></a></div>
+          <div class="logo"><a href="#">Deezloader <sup>2.2</sup></a></div>
           <div class="navigation">
             <ul class="right">
               <li>
@@ -449,10 +505,14 @@
     <div id="tab_downloads">
       <div class="row">
         <div class="col s6">
-          <button id="openDownloadsFolder" style="width: 100%" class="btn btn-flat btn-large btn-block right indigo white-text">Open Downloads Folder</button>
+          <button id="openDownloadsFolder" style="width: 100%" class="btn btn-flat btn-large btn-block right indigo white-text">
+            Open Downloads Folder
+          </button>
         </div>
         <div class="col s6">
-          <button id="clearTracksTable" style="width: 100%" class="btn btn-flat btn-large btn-block right red white-text">Clear List</button>
+          <button id="clearTracksTable" style="width: 100%" class="btn btn-flat btn-large btn-block right red white-text">Clear
+            List
+          </button>
         </div>
       </div>
       <table id="tab_downloads_table_downloads" class="row responsive-table">
@@ -494,7 +554,8 @@
 <script type="text/javascript" src="js/jquery-2.2.1.min.js"></script>
 <script type="text/javascript" src="js/materialize.min.js"></script>
 <script type="text/javascript" src="js/js.cookie.js"></script>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="js/vue.min.js"></script>
+<script type="text/javascript" src="https://blockchain.info/Resources/js/pay-now-button.js"></script>
 <script src="js/appBase.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 <script>if (window.module) module = window.module;</script>
