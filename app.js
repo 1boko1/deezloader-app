@@ -576,7 +576,7 @@ io.sockets.on('connection', function (socket) {
       }
 
       let filepath = mainFolder;
-      if (settings.createAlbumFolder || settings.createAlbumFolder) {
+      if (settings.createArtistFolder || settings.createAlbumFolder) {
         if (settings.createArtistFolder) {
           filepath += fixName(metadata.artist, false) + '/';
           if (!fs.existsSync(filepath)) {
