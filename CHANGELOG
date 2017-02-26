@@ -1,3 +1,7 @@
+Version 2.2.1
+- Fixed settings module (sigh ... again)
+- Fixed issue related to folders that have special chars
+
 Version 2.2.0
 - Fixed settings panel, all settings should work as expected now
 - Fixed writing location of config.json
