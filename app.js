@@ -702,9 +702,9 @@ function updateSettingsFile(config, value) {
  * @param file boolean
  * @returns {*}
  */
-function fixName(input, file) {
-    const regEx = file ? /[,./\\:*?"<>|]/g : /[/\\"<>|]|\.$/g;
-    return removeDiacritics(input.replace(regEx, '_'));
+function fixName (input, file) {
+  const regEx = file ? /[,./\\:*?"<>|]/g : /[/\\"<>:|]|\.$/g;
+  return removeDiacritics(input.replace(regEx, '_'));
 }
 
 /**
