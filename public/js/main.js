@@ -4,11 +4,11 @@
 const socket = io.connect(window.location.href);
 const startingChartCountry = 'UK';
 const defaultUserSettings = mainApp.defaultSettings;
+const defaultDownloadLocation = mainApp.defaultDownloadDir;
+const triesToConnect = mainApp.triesToConnect;
 let userSettings = [];
 
-console.log(defaultUserSettings);
-
-// Ping the server to check on the API
+// Ping the server to check on the API each second
 let initInterval = setInterval(function () {
   socket.emit("checkInit");
 }, 1000);
@@ -18,7 +18,7 @@ let initConnectionFails = 0;
 socket.on("checkInit", function (data) {
   // if all is good proceed on the next screen
   if (data.status === true) {
-    $('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+    $('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
       $(this).css('display', 'none');
     });
     clearInterval(initInterval);
@@ -27,8 +27,8 @@ socket.on("checkInit", function (data) {
   // If not ... show a message and a quit button
   if (data.status === false) {
     initConnectionFails++;
-    if (initConnectionFails >= 3){
-      $('#init-text').text('Connection to Deezer API failed!');
+    if (initConnectionFails >= triesToConnect){
+      $('#init-text').text('Connection to Deezer API failed! Please try again.');
       $('#init-preloader').hide();
 
       $('#initializing .buttons').css('display','inline');
@@ -109,6 +109,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 
 // Reset defaults button
 $('#modal_settings_btn_defaultSettings').click(function () {
+  defaultUserSettings.downloadLocation = defaultDownloadLocation;
   fillSettingsModal(defaultUserSettings);
 });
 
