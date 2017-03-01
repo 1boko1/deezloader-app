@@ -11,6 +11,9 @@ All versions of this application can be found [here](https://mega.nz/#F!z1tG2Q6I
 4. ???
 5. Profit
 
+# How to contribute
+All merge requests should be done on the `development` branch. The `master` branch is only for releases and every time the `development` branch gets merged into `master` there will be a release.
+
 # Compiling the source
 1. Clone this repository
 2. Run `npm install` to install all dependencies
