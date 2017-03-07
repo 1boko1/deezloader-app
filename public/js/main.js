@@ -78,6 +78,7 @@ socket.on('getUserSettings', function (data) {
 // Prevent default behavior of closing button
 $('.modal-close').click(function (e) {
   e.preventDefault();
+
 });
 
 // Settings Modal START
@@ -251,7 +252,6 @@ function showResults_table_album(albums) {
   var tableBody = $('#tab_search_table_results_tbody_results');
 
   $(tableBody).html('');
-
   $('#tab_search_table_results_thead_album').removeClass('hide');
 
   for (var i = 0; i < albums.length; i++) {
@@ -266,7 +266,7 @@ function showResults_table_album(albums) {
         '<td>' + currentResultAlbum['nb_tracks'] + '</td>' +
         '</tr>');
 
-    generateShowTracklistButton(currentResultAlbum['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
+    generateShowTracklistSelectiveButton(currentResultAlbum['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
     generateDownloadLink(currentResultAlbum['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 
   }
@@ -318,11 +318,24 @@ function showResults_table_playlist(playlists) {
         '<td>' + currentResultPlaylist['nb_tracks'] + '</td>' +
         '</tr>');
 
-    generateShowTracklistButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
+    generateShowTracklistSelectiveButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
     generateDownloadLink(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 
   }
 
+}
+
+function generateShowTracklistSelectiveButton(link) {
+
+  var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>');
+
+  $(btn_showTrackListSelective).click(function (ev){
+    ev.preventDefault();
+
+    showTrackListSelective(link);
+  });
+
+  return btn_showTrackListSelective;
 }
 
 function generateShowTracklistButton(link) {
@@ -341,11 +354,43 @@ function generateShowTracklistButton(link) {
 
 }
 
+var trackListSelectiveModalApp = new Vue({
+  el: '#modal_trackListSelective',
+  data: {
+    title: null,
+    head: null
+  }
+});
+
 var trackListModalApp = new Vue({
   el: '#modal_trackList',
   data: {
     title: null,
     head: null
+  }
+});
+
+function showTrackListSelective(link) {
+
+  $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').addClass('hide');
+  $('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').removeClass('hide');
+
+  $('#modal_trackListSelective').modal('open');
+
+  socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)});
+}
+
+$('#download_track_selection').click(function(e){
+  e.preventDefault();
+  var urls = [];
+  $("input:checkbox.trackCheckbox:checked").each(function(){
+    urls.push($(this).val());
+  });
+
+  if(urls.length != 0){
+    for (var ia = 0; ia < urls.length; ia++) {
+      addToQueue(urls[ia]);
+    }
   }
 });
 
@@ -365,6 +410,7 @@ socket.on("getTrackList", function (data) {
   //data.response -> API response
 
   var trackList = data.response.data, content = '';
+  var trackListSelective = data.response.data, content = '';
 
   if (typeof trackList == 'undefined') {
     alert('Well, there seems to be a problem with this part of the app. Please notify the developer.');
@@ -372,7 +418,11 @@ socket.on("getTrackList", function (data) {
   }
 
   // ########################################
-  var tableBody = $('#modal_trackList_table_trackList_tbody_trackList');
+  if(data.reqType == 'album' || data.reqType == 'playlist'){
+    var tableBody = $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective');
+  } else {
+    var tableBody = $('#modal_trackList_table_trackList_tbody_trackList');
+  }
 
   $(tableBody).html('');
 
@@ -395,6 +445,24 @@ socket.on("getTrackList", function (data) {
 
       generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>');
     }
+  } else if(data.reqType == 'album' || data.reqType == 'playlist')  {
+    trackListSelectiveModalApp.title = 'Tracklist';
+
+    trackListSelectiveModalApp.head = [
+      {title: '#'},
+      {title: 'Song'},
+      {title: 'Artist'},
+      {title: '<i class="material-icons">timer</i>'},
+      {title: ''}
+    ];
+
+    for (var i = 0; i < trackList.length; i++) {
+      $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
+          '<td>' + trackList[i].title + '</td>' +
+          '<td>' + trackList[i].artist.name + '</td>' +
+          '<td>' + convertDuration(trackList[i].duration) + '</td>' +
+          '<td><input class="trackCheckbox" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><label for="trackChk' + i + '"></label></tr>');
+    }
   } else {
     trackListModalApp.title = 'Tracklist';
     trackListModalApp.head = [
@@ -414,10 +482,16 @@ socket.on("getTrackList", function (data) {
     }
   }
 
+  if(data.reqType == 'album' || data.reqType == 'playlist'){
+    $('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide');
+    $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide');
+  } else {
+    $('#modal_trackList_table_trackList_tbody_loadingIndicator').addClass('hide');
+    $('#modal_trackList_table_trackList_tbody_trackList').removeClass('hide');
+  }
 
   //$('#modal_trackList_table_trackList_tbody_trackList').html(content);
-  $('#modal_trackList_table_trackList_tbody_loadingIndicator').addClass('hide');
-  $('#modal_trackList_table_trackList_tbody_trackList').removeClass('hide');
+  
 
 
 });

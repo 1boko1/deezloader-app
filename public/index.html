@@ -300,6 +300,49 @@
   </div>
 </div>
 
+<!--##########################################MODAL_TRACKLISTALBUM###########################################-->
+<div id="modal_trackListSelective" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <div class="row">
+      <h4 class="col s12">{{ title }}</h4>
+    </div>
+    <div class="row">
+      <table class="highlight col s12">
+        <thead>
+        <tr>
+          <td v-for="data in head" v-html="data.title"></td>
+        </tr>
+        </thead>
+        <tbody id="modal_trackListSelective_table_trackList_tbody_loadingIndicator" class="hide">
+        <tr>
+          <td class="center" colspan="4">
+            <div class="preloader-wrapper big active">
+              <div class="spinner-layer">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                  <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+        <tbody id="modal_trackListSelective_table_trackListSelective_tbody_trackListSelective" class="hide">
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light indigo white-text right">Download selection<i class="material-icons right">file_download</i></a>
+    <a href="#" class="modal-close waves-effect btn-flat">Close</a>
+  </div>
+</div>
+
 <!--##########################################MODAL_MSG###########################################-->
 <div id="modal_msg" class="modal">
   <div class="modal-content">
