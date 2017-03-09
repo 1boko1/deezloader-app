@@ -461,7 +461,7 @@ socket.on("getTrackList", function (data) {
           '<td>' + trackList[i].title + '</td>' +
           '<td>' + trackList[i].artist.name + '</td>' +
           '<td>' + convertDuration(trackList[i].duration) + '</td>' +
-          '<td><input class="trackCheckbox" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><label for="trackChk' + i + '"></label></tr>');
+          '<td><div class="valign-wrapper"><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><label for="trackChk' + i + '"></label></div></tr>');
     }
   } else {
     trackListModalApp.title = 'Tracklist';
