@@ -5,6 +5,11 @@ table.responsive-table td:empty:before {
     min-height: 56px;
 }
 
+.valignicon {
+    position: relative;
+    transform: translateY(+8%);
+}
+
 td > img {
     display: flex;
 }
