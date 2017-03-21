@@ -20,7 +20,7 @@ const app = express();
 const server = require('http').createServer(app);
 const http = require('http');
 const io = require('socket.io').listen(server, {log: false});
-const fs = require('fs');
+const fs = require('fs-extra');
 const async = require('async');
 const request = require('request');
 const nodeID3 = require('node-id3');
@@ -595,10 +595,15 @@ io.sockets.on('connection', function (socket) {
                 filepath += fixName(settings.addToPath, true) + '/';
             }
 
+
+            fs.ensureDirSync(filepath);
+            // ___________________________________________
+            // NOTE: OBSOLETE
+            // ___________________________________________
             //Create folder if doesn't exist
-            if (!fs.existsSync(filepath)) {
-                fs.mkdirSync(filepath);
-            }
+            // if (!fs.existsSync(filepath)) {
+            //     fs.mkdirSync(filepath);
+            // }
 
             let writePath = filepath + fixName(filename, true) + '.mp3';
 
@@ -648,7 +653,7 @@ io.sockets.on('connection', function (socket) {
                     }
 
                     if (settings.createM3UFile && settings.playlist) {
-                        fs.appendFileSync(filepath + "playlist.m3u", filename + ".mp3\r\n");
+                        fs.appendFileSync(filepath + "playlist.m3u", fixName(filename, true) + ".mp3\r\n");
                     }
 
                     console.log("Downloaded: " + metadata.artist + " - " + metadata.title);
@@ -692,7 +697,9 @@ function updateSettingsFile(config, value) {
     fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
         if (err) return console.log(err);
         console.log('Settings Updated');
-        initFolders();
+
+        // FIXME: Endless Loop, due to call from initFolders()...crashes soon after startup
+        // initFolders();
     });
 }
 
@@ -703,7 +710,7 @@ function updateSettingsFile(config, value) {
  * @returns {*}
  */
 function fixName (input, file) {
-  const regEx = file ? /[,./\\:*?"<>|]/g : /[/\\"<>:|]|\.$/g;
+  const regEx = file ? /[,\/\\:*?"<>|]/g : /[\/\\"<>:|]|\.$/g;
   return removeDiacritics(input.replace(regEx, '_'));
 }
 
@@ -915,22 +922,28 @@ function initFolders() {
         updateSettingsFile('downloadLocation', defaultDownloadDir);
     }
 
+    fs.removeSync(coverArtFolder);
+    fs.ensureDirSync(coverArtFolder);
+
+    // ______________________________________________
+    // NOTE: OBSOLETE
+    // ______________________________________________
     // Check if folder for covers exists. Create if not
-    if (fs.existsSync(coverArtFolder)) {
+    // if (fs.existsSync(coverArtFolder)) {
 
-        // Delete each file inside the folder
-        fs.readdirSync(coverArtFolder).forEach(function (file, index) {
-            let curPath = coverArtFolder + "/" + file;
-            fs.unlinkSync(curPath);
-        });
+    //     // Delete each file inside the folder
+    //     fs.readdirSync(coverArtFolder).forEach(function (file, index) {
+    //         let curPath = coverArtFolder + "/" + file;
+    //         fs.unlinkSync(curPath);
+    //     });
 
-        // Delete the folder and make a new one
-        fs.rmdir(coverArtFolder, function (err) {
-            fs.mkdirSync(coverArtFolder);
-        });
-    } else {
-        fs.mkdirSync(coverArtFolder);
-    }
+    //     // Delete the folder and make a new one
+    //     fs.rmdir(coverArtFolder, function (err) {
+    //         fs.mkdirSync(coverArtFolder);
+    //     });
+    // } else {
+    //     fs.mkdirSync(coverArtFolder);
+    // }
 }
 
 /**
