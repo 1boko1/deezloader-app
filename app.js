@@ -92,28 +92,43 @@ io.sockets.on('connection', function (socket) {
     });
 
     Deezer.onDownloadProgress = function (track, progress) {
-        if (!track.trackSocket || track.trackSocket.currentItem.type != "track") {
+        if (!track.trackSocket) {
             return;
         }
-        let complete;
-        if (!track.trackSocket.currentItem.percentage) {
-            track.trackSocket.currentItem.percentage = 0;
-        }
-        if (track.FILESIZE_MP3_320) {
-            complete = track.FILESIZE_MP3_320;
-        } else if (track.FILESIZE_MP3_256) {
-            complete = track.FILESIZE_MP3_256;
-        } else {
-            complete = track.FILESIZE_MP3_128 || 0;
+
+        if(track.trackSocket.currentItem.type == "track"){
+            let complete;
+            if (!track.trackSocket.currentItem.percentage) {
+                track.trackSocket.currentItem.percentage = 0;
+            }
+            if (track.FILESIZE_MP3_320) {
+                complete = track.FILESIZE_MP3_320;
+            } else if (track.FILESIZE_MP3_256) {
+                complete = track.FILESIZE_MP3_256;
+            } else {
+                complete = track.FILESIZE_MP3_128 || 0;
+            }
+
+            let percentage = (progress / complete) * 100;
+
+            if ((percentage - track.trackSocket.currentItem.percentage > 1) || (progress == complete)) {
+                track.trackSocket.currentItem.percentage = percentage;
+                track.trackSocket.emit("downloadProgress", {
+                    queueId: track.trackSocket.currentItem.queueId,
+                    percentage: track.trackSocket.currentItem.percentage
+                });
+            }
         }
 
-        let percentage = (progress / complete) * 100;
+        if(track.trackSocket.currentItem.type == "album" || track.trackSocket.currentItem.type == "playlist"){
+            let numTracks = track.trackSocket.currentItem.size;
+            let downloaded = track.trackSocket.currentItem.downloaded;
 
-        if ((percentage - track.trackSocket.currentItem.percentage > 1) || (progress == complete)) {
-            track.trackSocket.currentItem.percentage = percentage;
+            let percentage = (downloaded / (numTracks)) * 100;
+
             track.trackSocket.emit("downloadProgress", {
                 queueId: track.trackSocket.currentItem.queueId,
-                percentage: track.trackSocket.currentItem.percentage
+                percentage: percentage
             });
         }
     };
@@ -191,6 +206,10 @@ io.sockets.on('connection', function (socket) {
                     });
                 }, function (err) {
                     console.log("Playlist finished: " + downloading.name);
+                    socket.emit("downloadProgress", {
+                        queueId: socket.downloadQueue[0].queueId,
+                        percentage: 100
+                    });
                     if (downloading && socket.downloadQueue[0] && socket.downloadQueue[0].queueId == downloading.queueId) socket.downloadQueue.shift();
                     socket.currentItem = null;
                     //fs.rmdirSync(coverArtDir);
@@ -235,6 +254,10 @@ io.sockets.on('connection', function (socket) {
                         socket.emit("updateQueue", downloading);
                     }
                     console.log("Album finished: " + downloading.name);
+                    socket.emit("downloadProgress", {
+                        queueId: socket.downloadQueue[0].queueId,
+                        percentage: 100
+                    });
                     if (downloading && socket.downloadQueue[0] && socket.downloadQueue[0].queueId == downloading.queueId) socket.downloadQueue.shift();
                     socket.currentItem = null;
                     //fs.rmdirSync(coverArtDir);
