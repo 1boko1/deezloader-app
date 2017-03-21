@@ -1,3 +1,12 @@
+Version 2.3.0
+- Fixed app refusing to start when some folders are missing
+- Fixed playlist file not containing the correct file names
+- Fixed folders with a dot at the end resulting in undeletable file
+- Fixed the progress bar for albums and playlists
+- Relocated explicit icon to the front of the filename
+- Added more explicit icons in album-/playlist- and artist-modal
+- Added a new feature which allow the user to only download selected song from an album or playlist
+
 Version 2.2.1
 - Fixed settings module (sigh ... again)
 - Fixed issue related to folders that have special chars
