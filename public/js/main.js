@@ -235,7 +235,7 @@ function showResults_table_track(tracks) {
     $(tableBody).append(
         '<tr class="animated fadeInUp">' +
         '<td><img src="' + currentResultTrack['album']['cover_small'] + '" class="circle"/></td>' +
-        '<td>' + currentResultTrack['title'] + (currentResultTrack.explicit_lyrics ? ' <i class="material-icons tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '</td>') +
+        (currentResultTrack.explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + currentResultTrack['title'] + '</td>' +
         '<td>' + currentResultTrack['artist']['name'] + '</td>' +
         '<td>' + currentResultTrack['album']['title'] + '</td>' +
         '<td>' + convertDuration(currentResultTrack['duration']) + '</td>' +
@@ -261,7 +261,7 @@ function showResults_table_album(albums) {
     $(tableBody).append(
         '<tr class="animated fadeInUp">' +
         '<td><img src="' + currentResultAlbum['cover_small'] + '" class="circle" /></td>' +
-        '<td>' + currentResultAlbum['title'] + '</td>' +
+        (currentResultAlbum.explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + currentResultAlbum['title'] + '</td>' +
         '<td>' + currentResultAlbum['artist']['name'] + '</td>' +
         '<td>' + currentResultAlbum['nb_tracks'] + '</td>' +
         '</tr>');
@@ -432,6 +432,7 @@ socket.on("getTrackList", function (data) {
     trackListModalApp.title = 'Album List';
     trackListModalApp.head = [
       {title: '#'},
+      {title: ''},
       {title: 'Album Title'},
       {title: 'Release Date'},
       {title: 'Download Album'}
@@ -440,6 +441,7 @@ socket.on("getTrackList", function (data) {
     for (var i = 0; i < trackList.length; i++) {
 
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
+          (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '<td></td>') +
           '<td><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></td>' +
           '<td>' + trackList[i].release_date + '</td>');
 
@@ -475,7 +477,8 @@ socket.on("getTrackList", function (data) {
     for (var i = 0; i < trackList.length; i++) {
 
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-          '<td>' + trackList[i].title + '</td>' +
+          (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') +
+          trackList[i].title + '</td>' +
           '<td>' + trackList[i].artist.name + '</td>' +
           '<td>' + convertDuration(trackList[i].duration) + '</td></tr>');
 
