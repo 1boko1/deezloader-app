@@ -206,10 +206,12 @@ io.sockets.on('connection', function (socket) {
                     });
                 }, function (err) {
                     console.log("Playlist finished: " + downloading.name);
-                    socket.emit("downloadProgress", {
-                        queueId: socket.downloadQueue[0].queueId,
-                        percentage: 100
-                    });
+                    if(typeof socket.downloadQueue[0] != 'undefined'){
+                        socket.emit("downloadProgress", {
+                            queueId: socket.downloadQueue[0].queueId,
+                            percentage: 100
+                        });
+                    }
                     if (downloading && socket.downloadQueue[0] && socket.downloadQueue[0].queueId == downloading.queueId) socket.downloadQueue.shift();
                     socket.currentItem = null;
                     //fs.rmdirSync(coverArtDir);
@@ -254,10 +256,12 @@ io.sockets.on('connection', function (socket) {
                         socket.emit("updateQueue", downloading);
                     }
                     console.log("Album finished: " + downloading.name);
-                    socket.emit("downloadProgress", {
-                        queueId: socket.downloadQueue[0].queueId,
-                        percentage: 100
-                    });
+                    if(typeof socket.downloadQueue[0] != 'undefined'){
+                        socket.emit("downloadProgress", {
+                            queueId: socket.downloadQueue[0].queueId,
+                            percentage: 100
+                        });
+                    }
                     if (downloading && socket.downloadQueue[0] && socket.downloadQueue[0].queueId == downloading.queueId) socket.downloadQueue.shift();
                     socket.currentItem = null;
                     //fs.rmdirSync(coverArtDir);

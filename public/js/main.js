@@ -460,7 +460,7 @@ socket.on("getTrackList", function (data) {
 
     for (var i = 0; i < trackList.length; i++) {
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-          '<td>' + trackList[i].title + '</td>' +
+          (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
           '<td>' + trackList[i].artist.name + '</td>' +
           '<td>' + convertDuration(trackList[i].duration) + '</td>' +
           '<td><div class="valign-wrapper"><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><label for="trackChk' + i + '"></label></div></tr>');
