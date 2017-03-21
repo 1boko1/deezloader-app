@@ -984,6 +984,9 @@ function settingsRegex(metadata, filename, playlist) {
     filename = filename.replace(/%title%/g, metadata.title);
     filename = filename.replace(/%album%/g, metadata.album);
     filename = filename.replace(/%artist%/g, metadata.artist);
+    if(typeof metadata.trackNumber != 'undefined'){
+        filename = filename.replace(/%number%/g, metadata.trackNumber);
+    }
     if (playlist) {
         filename = filename.replace(/%number%/g, pad(playlist.position + 1, playlist.fullSize.toString().length));
     }
