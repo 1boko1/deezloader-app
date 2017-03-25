@@ -9,6 +9,7 @@
  *
  *
  *  Maintained by ParadoxalManiak <https://www.reddit.com/user/ParadoxalManiak/>
+ *  and snwflake <https://www.reddit.com/user/_snwflake/>
  *  Original work by ZzMTV <https://boerse.to/members/zzmtv.3378614/>
  * */
 
@@ -624,13 +625,6 @@ io.sockets.on('connection', function (socket) {
 
 
             fs.ensureDirSync(filepath);
-            // ___________________________________________
-            // NOTE: OBSOLETE
-            // ___________________________________________
-            //Create folder if doesn't exist
-            // if (!fs.existsSync(filepath)) {
-            //     fs.mkdirSync(filepath);
-            // }
 
             let writePath = filepath + fixName(filename, true) + '.mp3';
 
@@ -737,7 +731,7 @@ function updateSettingsFile(config, value) {
  * @returns {*}
  */
 function fixName (input, file) {
-  const regEx = file ? /[,\/\\:*?"<>|]/g : /[\/\\"<>:|]|\.$/g;
+  const regEx = file ? /[,\/\\:*?"<>|]/g : /[\/\\"<>*?:|]|\.$/g;
   return removeDiacritics(input.replace(regEx, '_'));
 }
 
@@ -952,25 +946,6 @@ function initFolders() {
     fs.removeSync(coverArtFolder);
     fs.ensureDirSync(coverArtFolder);
 
-    // ______________________________________________
-    // NOTE: OBSOLETE
-    // ______________________________________________
-    // Check if folder for covers exists. Create if not
-    // if (fs.existsSync(coverArtFolder)) {
-
-    //     // Delete each file inside the folder
-    //     fs.readdirSync(coverArtFolder).forEach(function (file, index) {
-    //         let curPath = coverArtFolder + "/" + file;
-    //         fs.unlinkSync(curPath);
-    //     });
-
-    //     // Delete the folder and make a new one
-    //     fs.rmdir(coverArtFolder, function (err) {
-    //         fs.mkdirSync(coverArtFolder);
-    //     });
-    // } else {
-    //     fs.mkdirSync(coverArtFolder);
-    // }
 }
 
 /**

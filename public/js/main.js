@@ -442,7 +442,7 @@ socket.on("getTrackList", function (data) {
 
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
           (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '<td></td>') +
-          '<td><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></td>' +
+          '<td><a href="#" id="test" data-link="' + trackList[i].link + '"><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></a></td>' +
           '<td>' + trackList[i].release_date + '</td>');
 
       generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>');
