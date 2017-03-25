@@ -1,7 +1,7 @@
 {
   "name": "deezloader-app",
   "productName": "Deezloader",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Download music from Deezer",
   "main": "main.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "ParadoxalManiak",
   "license": "CC0-4.0",
   "devDependencies": {
-    "electron": "^1.4.1"
+    "electron": "1.6.2"
   },
   "dependencies": {
     "async": "^2.1.4",

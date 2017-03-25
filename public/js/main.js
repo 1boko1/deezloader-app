@@ -489,9 +489,6 @@ socket.on("getTrackList", function (data) {
   }
 
   if(data.reqType == 'album' || data.reqType == 'playlist'){
-    $('input:checkbox.selectAll').change(function(){
-      $('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'));
-    });
     $('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide');
     $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide');
   } else {
@@ -506,6 +503,9 @@ socket.on("getTrackList", function (data) {
     showTrackListSelective($(this).data('link'));
   });
 
+  $('input:checkbox.selectAll').change(function(){
+    $('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'));
+  });
 });
 
 //#############################################TAB_CHARTS#############################################\\
