@@ -23,6 +23,7 @@ function Deezer() {
 	this.albumPicturesHost = "http://e-cdn-images.deezer.com/images/cover/"
 	this.albumPictures = {
 		big: "/800x800.jpg"
+                          // max 1200x1200
 	}
 	this.reqStream = null;
 }

@@ -960,7 +960,9 @@ function settingsRegex(metadata, filename, playlist) {
     filename = filename.replace(/%album%/g, metadata.album);
     filename = filename.replace(/%artist%/g, metadata.artist);
     if(typeof metadata.trackNumber != 'undefined'){
-        filename = filename.replace(/%number%/g, metadata.trackNumber);
+        filename = filename.replace(/%number%/g, splitNumber(metadata.trackNumber));
+    } else {
+        filename = filename.replace(/%number%/g, '');
     }
     if (playlist) {
         filename = filename.replace(/%number%/g, pad(playlist.position + 1, playlist.fullSize.toString().length));
@@ -977,6 +979,17 @@ function settingsRegex(metadata, filename, playlist) {
 function pad(str, max) {
     str = str.toString();
     return str.length < max ? pad("0" + str, max) : str;
+}
+
+/**
+ * Splits the %number%
+ * @param string str
+ * @return string
+ */
+function splitNumber(str){
+    str = str.toString();
+    var i = str.indexOf("/");
+    return i > 0 ? str.slice(0, i) : str;
 }
 
 /**

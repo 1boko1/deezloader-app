@@ -382,6 +382,7 @@ function showTrackListSelective(link) {
 
 $('#download_track_selection').click(function(e){
   e.preventDefault();
+  $('#modal_trackListSelective').modal('close');
   var urls = [];
   $("input:checkbox.trackCheckbox:checked").each(function(){
     urls.push($(this).val());
@@ -458,6 +459,8 @@ socket.on("getTrackList", function (data) {
       {title: '<div class="valign-wrapper"><input class="selectAll" type="checkbox" id="selectAll"><label for="selectAll"></label></div>'}
     ];
 
+    $('.selectAll').prop('checked', false);
+    
     for (var i = 0; i < trackList.length; i++) {
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
           (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
@@ -486,6 +489,9 @@ socket.on("getTrackList", function (data) {
   }
 
   if(data.reqType == 'album' || data.reqType == 'playlist'){
+    $('input:checkbox.selectAll').change(function(){
+      $('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'));
+    });
     $('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide');
     $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide');
   } else {
@@ -496,7 +502,7 @@ socket.on("getTrackList", function (data) {
   //$('#modal_trackList_table_trackList_tbody_trackList').html(content);
   
   $('#album_chip').click(function(e){
-    $('#modal_trackList_table_trackList_tbody_trackList').addClass('hide');
+    $('#modal_trackList').modal('close');
     showTrackListSelective($(this).data('link'));
   });
 

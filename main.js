@@ -12,8 +12,8 @@ let mainWindow;
 
 // Create a new instance of the WindowStateManager
 const mainWindowState = new WindowStateManager('mainWindow', {
-  defaultWidth: 1400,
-  defaultHeight: 900
+  defaultWidth: 1280,
+  defaultHeight: 800
 });
 
 require('electron-context-menu')({

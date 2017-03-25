@@ -62,14 +62,14 @@
       <div class="input-field col s12">
         <i class="material-icons prefix">label</i>
         <input type="text" id="modal_settings_input_trackNameTemplate"/>
-        <label for="modal_settings_input_trackNameTemplate">Track names</label>
+        <label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %artist%, %title% and %album%">info_outline</i></label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <i class="material-icons prefix">label</i>
         <input type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
-        <label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names</label>
+        <label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %artist%, %title% and %album%">info_outline</i></label>
       </div>
     </div>
     <div class="row">
@@ -114,7 +114,7 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
           <div class="collapsible-body">
             <p>
-              <b>Version:</b> 2.3.0<br/>
+              <b>Version:</b> 2.3.1<br/>
               <b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
               <b>Former Maintainer:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a><br>
               <b>Currently Maintained By:</b> <a href="https://www.reddit.com/user/_snwflake/">snwflake</a><br>
@@ -154,6 +154,11 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
           <div class="collapsible-body">
             <p>
+              <b>Version 2.3.1</b><br/>
+              - Fixed the %number% variable to only list the current track
+              - Fixed the resolution for user with a screensize less than 1400x900
+              - Added a checkbox to select everything in album/playlist-modal
+              - Fixed folder/file creation name for windows (...again...)
               <b>Version 2.3.0</b><br/>
               - Fixed app refusing to start when some folders are missing<br/>
               - Fixed playlist file not containing the correct file names<br/>
