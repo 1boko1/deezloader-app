@@ -44,6 +44,8 @@ const defaultSettings = {
     "downloadLocation": null
 };
 
+winston.level = 'debug';
+
 // Setup error logging
 winston.add(winston.transports.File, {
     filename: __dirname + '/deezloader.log',
@@ -579,7 +581,7 @@ io.sockets.on('connection', function (socket) {
             track.trackSocket = socket;
 
             settings = settings || {};
-
+            // winston.log('debug', 'TRACK:', track);
             if (track["VERSION"]) track["SNG_TITLE"] += " " + track["VERSION"];
 
             let metadata = {
@@ -678,6 +680,16 @@ io.sockets.on('connection', function (socket) {
                     }
 
                     console.log("Downloaded: " + metadata.artist + " - " + metadata.title);
+                    metadata.artist = '';
+                    var first = true;
+                    track['ARTISTS'].forEach(function(artist){
+                        if(first){
+                            metadata.artist = artist['ART_NAME'];
+                            first = false;
+                        } else{
+                            metadata.artist += ', ' + artist['ART_NAME'];
+                        }
+                    });
 
                     //Write ID3-Tags
                     if (!nodeID3.write(metadata, writePath)) {
