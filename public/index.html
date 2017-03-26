@@ -75,6 +75,18 @@
     <div class="row">
       <div class="input-field col s12">
         <i class="material-icons prefix">label</i>
+        <select name="artworkSize" id="modal_settings_select_artworkSize">
+          <option value="/500x500.jpg">500x500</option>
+          <option value="/800x800.jpg" selected>800x800</option>
+          <option value="/1000x1000.jpg">1000x1000</option>
+          <option value="/1200x1200.jpg">1200x1200</option>
+        </select>
+        <label for="modal_settings_select_artworkSize">Artwork size</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <i class="material-icons prefix">label</i>
         <input type="text" id="modal_settings_input_downloadTracksLocation"/>
         <label for="modal_settings_input_downloadTracksLocation">Download location</label>
       </div>
@@ -159,6 +171,8 @@
               - Fixed the resolution for user with a screensize less than 1400x900p<br/>
               - Fixed folder/file creation name for windows (...again...)<br/>
               - Added a checkbox to select everything in album/playlist-modal (broken)<br/>
+              - Added tooltip for supported naming patterns<br/>
+              - Added an option to select a different artwork size. (500p, 800p(default), 1000p, 1200p)
               - Enhanced tagging, now all artists are written to the 'artist'-field<br/>
               <b>Version 2.3.0</b><br/>
               - Fixed app refusing to start when some folders are missing<br/>

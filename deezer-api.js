@@ -21,9 +21,12 @@ function Deezer() {
 		"Accept-Language": "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"
 	}
 	this.albumPicturesHost = "http://e-cdn-images.deezer.com/images/cover/"
+	/**
+	 * Deprecated, use userSettings instead
+	 * @deprecated
+	 */
 	this.albumPictures = {
 		big: "/800x800.jpg"
-                          // max 1200x1200
 	}
 	this.reqStream = null;
 }
@@ -188,7 +191,7 @@ Deezer.prototype.getTrack = function(id, callback) {
 }
 
 Deezer.prototype.search = function(text, type, callback) {
-	if(typeof type === "function") { 
+	if(typeof type === "function") {
 		callback = type;
 		type = "";
 	} else {

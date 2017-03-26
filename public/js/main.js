@@ -100,7 +100,8 @@ $('#modal_settings_btn_saveSettings').click(function () {
     createM3UFile: $('#modal_settings_cbox_createM3UFile').is(':checked'),
     createArtistFolder: $('#modal_settings_cbox_createArtistFolder').is(':checked'),
     createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked'),
-    downloadLocation: $('#modal_settings_input_downloadTracksLocation').val()
+    downloadLocation: $('#modal_settings_input_downloadTracksLocation').val(),
+    artworkSize: $('#modal_settings_select_artworkSize').val()
   };
 
   // Send updated settings to be saved into config file
@@ -460,7 +461,7 @@ socket.on("getTrackList", function (data) {
     ];
 
     $('.selectAll').prop('checked', false);
-    
+
     for (var i = 0; i < trackList.length; i++) {
       $(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
           (trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
@@ -497,7 +498,7 @@ socket.on("getTrackList", function (data) {
   }
 
   //$('#modal_trackList_table_trackList_tbody_trackList').html(content);
-  
+
   $('#album_chip').click(function(e){
     $('#modal_trackList').modal('close');
     showTrackListSelective($(this).data('link'));

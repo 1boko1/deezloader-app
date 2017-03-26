@@ -41,7 +41,8 @@ const defaultSettings = {
     "createM3UFile": false,
     "createArtistFolder": false,
     "createAlbumFolder": false,
-    "downloadLocation": null
+    "downloadLocation": null,
+    "artworkSize": "/800x800.jpg"
 };
 
 winston.level = 'debug';
@@ -598,7 +599,7 @@ io.sockets.on('connection', function (socket) {
             }
 
             if (track["ALB_PICTURE"]) {
-                metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"] + Deezer.albumPictures.big;
+                metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"] + settings.artworkSize;
             }
 
             let filename = `${metadata.artist} - ${metadata.title}`;
