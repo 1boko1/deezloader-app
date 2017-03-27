@@ -2,6 +2,7 @@ Version 2.3.1
 - Fixed the %number% variable to only list the current track
 - Fixed the resolution for user with a screensize less than 1400x900p
 - Fixed folder/file creation name for windows (...again...)
+- Fixed explicit tooltip
 - Added more logging
 - Added a checkbox to select everything in album/playlist-modal (broken)
 - Added tooltip for supported naming patterns
