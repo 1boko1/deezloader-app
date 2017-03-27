@@ -6,6 +6,7 @@
     "createM3UFile": false,
     "createArtistFolder": false,
     "createAlbumFolder": false,
-    "downloadLocation": null
+    "downloadLocation": null,
+    "artworkSize": "/800x800.jpg"
   }
 }
