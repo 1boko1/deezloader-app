@@ -5,7 +5,7 @@ node_modules
 *.log
 config.json
 /BUILD
-
+RELEASE.md
 
 
 ### Windows template
@@ -27,4 +27,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
