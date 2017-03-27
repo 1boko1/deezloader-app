@@ -248,6 +248,7 @@ io.sockets.on('connection', function (socket) {
                         if (!err) {
                             downloading.downloaded++;
                         } else {
+
                             downloading.failed++;
                         }
                         socket.emit("updateQueue", downloading);
