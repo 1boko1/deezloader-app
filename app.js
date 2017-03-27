@@ -45,14 +45,16 @@ const defaultSettings = {
     "artworkSize": "/800x800.jpg"
 };
 
-winston.level = 'debug';
-
 // Setup error logging
+// fileTransport
 winston.add(winston.transports.File, {
     filename: __dirname + '/deezloader.log',
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
+
+// consoleTransport
+winston.add(winston.transports.Console);
 
 // Setup the folders START
 let mainFolder = defaultDownloadDir;
@@ -79,7 +81,7 @@ magicInterval(function (interval) {
             DeezerAPIconnected = true;
             clearInterval(interval);
         } else {
-            console.log(err);
+            winston.log('error', 'error', err);
         }
     });
 }, 1000, triesToConnect);
@@ -202,7 +204,7 @@ io.sockets.on('connection', function (socket) {
                         if (!err) {
                             downloading.downloaded++;
                         } else {
-                            console.log(err);
+                            winston.log('error', 'error', err);
                             downloading.failed++;
                         }
                         socket.emit("updateQueue", downloading);
@@ -278,7 +280,7 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadtrack", function (data) {
         Deezer.getTrack(data.id, function (track, err) {
             if (err) {
-                console.log(err);
+                winston.log('error', 'error', err);
                 return;
             }
             let queueId = "id" + Math.random().toString(36).substring(2);
@@ -300,12 +302,12 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadplaylist", function (data) {
         Deezer.getPlaylist(data.id, function (playlist, err) {
             if (err) {
-                console.log(err);
+                winston.log('error', 'error', err);
                 return;
             }
             Deezer.getPlaylistSize(data.id, function (size, err) {
                 if (err) {
-                    console.log(err);
+                    winston.log('error', 'error', err);
                     return;
                 }
                 let queueId = "id" + Math.random().toString(36).substring(2);
@@ -327,12 +329,12 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadalbum", function (data) {
         Deezer.getAlbum(data.id, function (album, err) {
             if (err) {
-                console.log(err);
+                winston.log('error', 'error', err);
                 return;
             }
             Deezer.getAlbumSize(data.id, function (size, err) {
                 if (err) {
-                    console.log(err);
+                    winston.log('error', 'error', err);
                     return;
                 }
                 let queueId = "id" + Math.random().toString(36).substring(2);
@@ -356,12 +358,12 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadartist", function (data) {
         Deezer.getArtist(data.id, function (artist, err) {
             if (err) {
-                console.log(err);
+                winston.log('error', 'error', err);
                 return;
             }
             Deezer.getArtistAlbums(data.id, function (albums, err) {
                 if (err) {
-                    console.log(err);
+                    winston.log('error', 'error', err);
                     return;
                 }
 
@@ -566,7 +568,7 @@ io.sockets.on('connection', function (socket) {
 
         configFile.userDefined = settings.userDefined;
         fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
-            if (err) return console.log(err);
+            if (err) return winston.log('error', 'error', err);
             console.log('Settings Updated');
             initFolders();
         });
@@ -729,7 +731,7 @@ function updateSettingsFile(config, value) {
     configFile.userDefined[config] = value;
 
     fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
-        if (err) return console.log(err);
+        if (err) return winston.log('error', 'error', err);
         console.log('Settings Updated');
 
         // FIXME: Endless Loop, due to call from initFolders()...crashes soon after startup
