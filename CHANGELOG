@@ -4,6 +4,7 @@ Version 2.3.1
 - Fixed folder/file creation name for windows (...again...)
 - Fixed explicit tooltip
 - Added more logging
+- Added progress bar support for artists
 - Added a checkbox to select everything in album/playlist-modal
 - Added tooltip for supported naming patterns
 - Added an option to select a different artwork size. (500p, 800p(default), 1000p, 1200p)
