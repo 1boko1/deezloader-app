@@ -122,13 +122,11 @@ io.sockets.on('connection', function (socket) {
                 });
             }
         }
-
-        if(track.trackSocket.currentItem.type == "album" || track.trackSocket.currentItem.type == "playlist"){
+        else if(track.trackSocket.currentItem.type == "album" || track.trackSocket.currentItem.type == "playlist"){
             let numTracks = track.trackSocket.currentItem.size;
             let downloaded = track.trackSocket.currentItem.downloaded;
 
             let percentage = (downloaded / (numTracks)) * 100;
-
             track.trackSocket.emit("downloadProgress", {
                 queueId: track.trackSocket.currentItem.queueId,
                 percentage: percentage
@@ -238,10 +236,11 @@ io.sockets.on('connection', function (socket) {
                         fullSize: downloading.playlistContent.length
                     };
                     downloadTrack(id, downloading.settings, function (err) {
-                        if (downloading.countPerAlbum) {
-                            callback();
-                            return;
-                        }
+                        // if (downloading.countPerAlbum) {
+                        //     winston.log('error', 'SUCK MY BALLZ!');
+                        //     callback();
+                        //     return;
+                        // }
                         if (!err) {
                             downloading.downloaded++;
                         } else {
@@ -253,7 +252,6 @@ io.sockets.on('connection', function (socket) {
                     });
                 }, function (err) {
                     if (downloading.countPerAlbum) {
-                        downloading.downloaded++;
                         if (socket.downloadQueue.length > 1 && socket.downloadQueue[1].queueId == downloading.queueId) {
                             socket.downloadQueue[1].download = downloading.downloaded;
                         }
@@ -364,22 +362,28 @@ io.sockets.on('connection', function (socket) {
                     winston.log('error', 'error', err);
                     return;
                 }
-
-                let queueId = "id" + Math.random().toString(36).substring(2);
                 for (let i = 0; i < albums.data.length; i++) {
-                    let album = albums.data[i];
-                    let _album = {
-                        name: album["title"],
-                        artist: artist.name,
-                        downloaded: 0,
-                        failed: 0,
-                        queueId: queueId,
-                        id: album["id"],
-                        type: "album",
-                        countPerAlbum: true
-                    };
-                    _album.settings = data.settings || {};
-                    addToQueue(_album);
+                    Deezer.getAlbumSize(albums.data[i].id, function(size, err){
+                        if(err) {
+                          winston.log('error', 'error', err);
+                          return;
+                        }
+                        let queueId = "id" + Math.random().toString(36).substring(2);
+                        let album = albums.data[i];
+                        let _album = {
+                            name: album["title"],
+                            artist: artist.name,
+                            size: size,
+                            downloaded: 0,
+                            failed: 0,
+                            queueId: queueId,
+                            id: album["id"],
+                            type: "album",
+                            countPerAlbum: true
+                        };
+                        _album.settings = data.settings || {};
+                        addToQueue(_album);
+                    });
                 }
             });
         });
