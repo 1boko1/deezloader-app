@@ -124,6 +124,7 @@ function fillSettingsModal(settings) {
   $('#modal_settings_cbox_createArtistFolder').prop('checked', settings.createArtistFolder);
   $('#modal_settings_cbox_createAlbumFolder').prop('checked', settings.createAlbumFolder);
   $('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation);
+  $('#modal_settings_select_artworkSize').val(settings.artworkSize);
 
   Materialize.updateTextFields()
 }
