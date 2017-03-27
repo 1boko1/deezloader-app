@@ -12,6 +12,14 @@ const path = remote.require('path');
     shell.openExternal(this.href);
   });
 
+  // selectAll-"feature"...its really crappy to wait for document change
+  // but since the materialize modal initialization is a fucking callback hell,
+  // this is pretty much the only option...will (hopefully) be refactored in
+  // version 2.4.0 when the entire rendering is switched to vue's...
+  $(document).on('change', 'input:checkbox.selectAll', function(){
+    $('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'));
+  });
+
   // Open DevTools when F12 is pressed
   document.addEventListener("keydown", function (e) {
     if (e.which === 123) {

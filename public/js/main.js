@@ -383,7 +383,6 @@ function showTrackListSelective(link) {
 
 $('#download_track_selection').click(function(e){
   e.preventDefault();
-  $('#modal_trackListSelective').modal('close');
   var urls = [];
   $("input:checkbox.trackCheckbox:checked").each(function(){
     urls.push($(this).val());
@@ -394,6 +393,7 @@ $('#download_track_selection').click(function(e){
       addToQueue(urls[ia]);
     }
   }
+  $('#modal_trackListSelective').modal('close');
 });
 
 function showTrackList(link) {
@@ -504,9 +504,6 @@ socket.on("getTrackList", function (data) {
     showTrackListSelective($(this).data('link'));
   });
 
-  $('input:checkbox.selectAll').change(function(){
-    $('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'));
-  });
 });
 
 //#############################################TAB_CHARTS#############################################\\

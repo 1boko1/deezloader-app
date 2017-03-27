@@ -53,9 +53,6 @@ winston.add(winston.transports.File, {
     humanReadableUnhandledException: true
 });
 
-// consoleTransport
-winston.add(winston.transports.Console);
-
 // Setup the folders START
 let mainFolder = defaultDownloadDir;
 
