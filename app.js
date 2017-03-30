@@ -692,7 +692,7 @@ io.sockets.on('connection', function (socket) {
                             metadata.artist = artist['ART_NAME'];
                             first = false;
                         } else{
-                            metadata.artist += ', ' + artist['ART_NAME'];
+                            metadata.artist += '\\\\' + artist['ART_NAME'];
                         }
                     });
 
