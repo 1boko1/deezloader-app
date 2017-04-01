@@ -37,6 +37,10 @@ socket.on("checkInit", function (data) {
   }
 });
 
+socket.on('message', (data) => {
+  message(data.title, JSON.stringify(data.message));
+});
+
 // Open downloads folder
 $('#openDownloadsFolder').on('click', function () {
   shell.showItemInFolder(userSettings.downloadLocation + path.sep + '.');

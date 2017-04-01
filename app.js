@@ -45,12 +45,20 @@ const defaultSettings = {
     "artworkSize": "/800x800.jpg"
 };
 
-// Setup error logging
-// fileTransport
-winston.add(winston.transports.File, {
-    filename: __dirname + '/deezloader.log',
-    handleExceptions: true,
-    humanReadableUnhandledException: true
+// setup error logging
+var logger = new (winston.Logger)({
+  level: 'error',
+  exitOnError: true,
+  transports: [
+    new (winston.transports.File)({
+      filename: __dirname + 'deezloader.log',
+      level: 'error',
+      handleExceptions: true,
+      humanReadableUnhandledException: true,
+      json: true
+    }),
+    new (winston.transports.Console)()
+  ]
 });
 
 // Setup the folders START
@@ -78,7 +86,7 @@ magicInterval(function (interval) {
             DeezerAPIconnected = true;
             clearInterval(interval);
         } else {
-            winston.log('error', 'error', err);
+            winston.log('error', 'The connection to Deezer failed', err);
         }
     });
 }, 1000, triesToConnect);
@@ -89,6 +97,16 @@ io.sockets.on('connection', function (socket) {
     socket.downloadQueue = [];
     socket.currentItem = null;
     socket.lastQueueId = null;
+
+    // Display error message when logging error
+    logger.on('logging', (transport, level, msg, meta) => {
+      if(level === 'error' || level === 'warn'){
+        socket.emit('message', {
+          title: msg,
+          message: meta
+        });
+      }
+    });
 
     socket.on("checkInit", function () {
         socket.emit("checkInit", {status: DeezerAPIconnected});
@@ -167,6 +185,7 @@ io.sockets.on('connection', function (socket) {
 
         if (downloading.type == "track") {
             downloadTrack(downloading.id, downloading.settings, function (err) {
+              logger.log('error', 'Error requesting track data', err);
                 if (err) {
                     downloading.failed++;
                 } else {
@@ -199,7 +218,7 @@ io.sockets.on('connection', function (socket) {
                         if (!err) {
                             downloading.downloaded++;
                         } else {
-                            winston.log('error', 'error', err);
+                            winston.log('error', 'Downloading the track failed', err);
                             downloading.failed++;
                         }
                         socket.emit("updateQueue", downloading);
@@ -236,15 +255,10 @@ io.sockets.on('connection', function (socket) {
                         fullSize: downloading.playlistContent.length
                     };
                     downloadTrack(id, downloading.settings, function (err) {
-                        // if (downloading.countPerAlbum) {
-                        //     winston.log('error', 'SUCK MY BALLZ!');
-                        //     callback();
-                        //     return;
-                        // }
                         if (!err) {
                             downloading.downloaded++;
                         } else {
-
+                            logger.log('error', 'Downloading track failed', err);
                             downloading.failed++;
                         }
                         socket.emit("updateQueue", downloading);
@@ -276,7 +290,7 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadtrack", function (data) {
         Deezer.getTrack(data.id, function (track, err) {
             if (err) {
-                winston.log('error', 'error', err);
+                winston.log('error', 'Error processing track data', err);
                 return;
             }
             let queueId = "id" + Math.random().toString(36).substring(2);
@@ -298,12 +312,12 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadplaylist", function (data) {
         Deezer.getPlaylist(data.id, function (playlist, err) {
             if (err) {
-                winston.log('error', 'error', err);
+                winston.log('error', 'Error fetching playlist data', err);
                 return;
             }
             Deezer.getPlaylistSize(data.id, function (size, err) {
                 if (err) {
-                    winston.log('error', 'error', err);
+                    winston.log('error', 'Error fetching playlist size', err);
                     return;
                 }
                 let queueId = "id" + Math.random().toString(36).substring(2);
@@ -325,12 +339,12 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadalbum", function (data) {
         Deezer.getAlbum(data.id, function (album, err) {
             if (err) {
-                winston.log('error', 'error', err);
+                winston.log('error', 'Error fetching album data', err);
                 return;
             }
             Deezer.getAlbumSize(data.id, function (size, err) {
                 if (err) {
-                    winston.log('error', 'error', err);
+                    winston.log('error', 'Error fetching the album size', err);
                     return;
                 }
                 let queueId = "id" + Math.random().toString(36).substring(2);
@@ -354,18 +368,18 @@ io.sockets.on('connection', function (socket) {
     socket.on("downloadartist", function (data) {
         Deezer.getArtist(data.id, function (artist, err) {
             if (err) {
-                winston.log('error', 'error', err);
+                winston.log('error', 'Error fetching artist data', err);
                 return;
             }
             Deezer.getArtistAlbums(data.id, function (albums, err) {
                 if (err) {
-                    winston.log('error', 'error', err);
+                    winston.log('error', 'Error fetching artist album data', err);
                     return;
                 }
                 for (let i = 0; i < albums.data.length; i++) {
                     Deezer.getAlbumSize(albums.data[i].id, function(size, err){
                         if(err) {
-                          winston.log('error', 'error', err);
+                          winston.log('error', 'Error fetching artist album size', err);
                           return;
                         }
                         let queueId = "id" + Math.random().toString(36).substring(2);
@@ -401,6 +415,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on("getChartsCountryList", function (data) {
         Deezer.getChartsTopCountry(function (charts, err) {
+          if(err) return logger.log('error', 'Error fetching chart country data', err);
             charts = charts.data || [];
             let countries = [];
             for (let i = 0; i < charts.length; i++) {
@@ -423,6 +438,7 @@ io.sockets.on('connection', function (socket) {
         }
 
         Deezer.getChartsTopCountry(function (charts, err) {
+            if(err) return logger.log('error', 'Error fetching chart data', err);
             charts = charts.data || [];
             let countries = [];
             for (let i = 0; i < charts.length; i++) {
@@ -570,7 +586,7 @@ io.sockets.on('connection', function (socket) {
 
         configFile.userDefined = settings.userDefined;
         fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
-            if (err) return winston.log('error', 'error', err);
+            if (err) return winston.log('error', 'Writing the config file failed', err);
             console.log('Settings Updated');
             initFolders();
         });
@@ -586,7 +602,6 @@ io.sockets.on('connection', function (socket) {
             track.trackSocket = socket;
 
             settings = settings || {};
-            // winston.log('debug', 'TRACK:', track);
             if (track["VERSION"]) track["SNG_TITLE"] += " " + track["VERSION"];
 
             let metadata = {
@@ -627,10 +642,10 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             } else if (settings.addToPath) {
-                filepath += fixName(settings.addToPath, true) + '/';
+                filepath += fixName(settings.addToPath, false) + path.sep;
             }
 
-
+            console.log(filepath);
             fs.ensureDirSync(filepath);
 
             let writePath = filepath + fixName(filename, true) + '.mp3';
@@ -662,6 +677,12 @@ io.sockets.on('connection', function (socket) {
                     socket.currentItem.cancelFlag = true;
                     callback();
                     return;
+                }
+                if(err && err.message !== 'aborted'){
+                  logger.log('error', 'Error: ' + err.message, {
+                    something: 'This track isnt available for download. Sorry :('
+                  });
+                  return;
                 }
                 if (err) {
                     Deezer.hasTrackAlternative(id, function (alternative, err) {
@@ -733,7 +754,7 @@ function updateSettingsFile(config, value) {
     configFile.userDefined[config] = value;
 
     fs.writeFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
-        if (err) return winston.log('error', 'error', err);
+        if (err) return winston.log('error', 'Writing the updated config file failed', err);
         console.log('Settings Updated');
 
         // FIXME: Endless Loop, due to call from initFolders()...crashes soon after startup
@@ -748,7 +769,7 @@ function updateSettingsFile(config, value) {
  * @returns {*}
  */
 function fixName (input, file) {
-  const regEx = file ? /[,\/\\:*?"<>|]/g : /[\/\\"<>*?:|]|\.$/g;
+  const regEx = file ? /[,\/\\:*?"<>|]/g : /[\/\\"<>*?:.|]|\$/g;
   return removeDiacritics(input.replace(regEx, '_'));
 }
 
