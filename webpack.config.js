@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: './src',
@@ -14,10 +15,22 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: __dirname + '/src'
+      },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('css-loader')
+      },
+      {
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000
+        }
       }
     ]
   },
   plugins: [
+    new ExtractTextPlugin("styles.css"),
     new webpack.LoaderOptionsPlugin({
       options: {
         babel: {
@@ -59,10 +72,10 @@ module.exports = {
 //         loader: 'babel-loader',
 //         exclude: /node_modules/
 //       },
-//       {
-//         test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
-//         loader: 'url-loader'
-//       }
+      // {
+      //   test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
+      //   loader: 'url-loader'
+      // }
 //     ]
 //   },
 //   plugins: [

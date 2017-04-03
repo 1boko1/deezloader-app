@@ -5,6 +5,7 @@ node_modules
 *.log
 config.json
 /dist
+/build
 RELEASE.md
 
 
