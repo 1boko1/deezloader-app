@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = {
   entry: './src',
@@ -17,6 +18,10 @@ module.exports = {
         include: __dirname + '/src'
       },
       {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('css-loader')
       },
@@ -30,7 +35,11 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin("styles.css"),
+    new ExtractTextPlugin("styles.min.css"),
+    new OptimizeCssAssetsPlugin({
+      assetNameRegExp: /\.min\.css$/,
+      cssProcessorOptions: { discardComments: { removeAll: true } }
+    }),
     new webpack.LoaderOptionsPlugin({
       options: {
         babel: {
@@ -43,57 +52,10 @@ module.exports = {
       $: "jquery",
       jQuery: "jquery",
       Hammer: "hammerjs/hammer"
-    })
+    }),
+    new webpack.ExternalsPlugin('commonjs', [
+      'electron'
+    ])
   ]
 
 }
-
-// module.exports = {
-//   entry: './app/main.js',
-//   target: 'node',
-//   output: {
-//     path: path.resolve(__dirname, './dist'),
-//     filename: 'build.js'
-//   },
-//   module: {
-//     rules: [
-//       {
-//         test: /\.css$/,
-//         use: [ 'style-loader', 'css-loader' ]
-//       }
-//     ],
-//     loaders: [
-//       {
-//         test: /\.vue$/,
-//         loader: 'vue-loader'
-//       },
-//       {
-//         test: /\.js$/,
-//         loader: 'babel-loader',
-//         exclude: /node_modules/
-//       },
-      // {
-      //   test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
-      //   loader: 'url-loader'
-      // }
-//     ]
-//   },
-//   plugins: [
-//     new webpack.ExternalsPlugin('commonjs', [
-//       'electron'
-//     ]),
-//     new webpack.LoaderOptionsPlugin({
-//       options: {
-//         babel: {
-//           "presets": ["es2015"],
-//           "plugins": ["transform-runtime"]
-//         }
-//       }
-//     }),
-//     new webpack.ProvidePlugin({
-//       $: "jquery",
-//       jQuery: "jquery",
-//       Hammer: "hammerjs/hammer"
-//     })
-//   ]
-// }
