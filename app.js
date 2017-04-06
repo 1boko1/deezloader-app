@@ -51,7 +51,7 @@ var logger = new (winston.Logger)({
   exitOnError: true,
   transports: [
     new (winston.transports.File)({
-      filename: __dirname + 'deezloader.log',
+      filename: __dirname + '/deezloader.log',
       level: 'error',
       handleExceptions: true,
       humanReadableUnhandledException: true,
