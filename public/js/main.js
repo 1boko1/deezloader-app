@@ -130,6 +130,7 @@ function fillSettingsModal(settings) {
   $('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation);
   $('#modal_settings_select_artworkSize').val(settings.artworkSize);
 
+  $('#modal_settings_select_artworkSize').material_select();
   Materialize.updateTextFields()
 }
 
